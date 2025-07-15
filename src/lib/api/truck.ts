@@ -23,3 +23,26 @@ export const fetchTruck = async () => {
 
   return json.data.trucks;
 };
+
+// ✅ Fetch truck by ID
+export const fetchTruckById = async (id: string) => {
+  const token = getCookie("authToken");
+
+  const res = await fetch(`${BASE_URL}/api/v1/trucks/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Truck not found");
+  }
+
+  const json = await res.json();
+
+  console.log("Fetched truck:", json.data.truck);
+
+  return json.data.truck;
+};

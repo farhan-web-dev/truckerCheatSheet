@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { AssetModal } from "@/components/AssetModal";
 import { useCreateTruck, useUpdateTruck } from "@/hooks/useTruckMutation";
 import { useDeleteTruck } from "@/hooks/useDeleteTruck";
+import RouteLoadingSpinner from "@/components/RouteLoadingSpinner";
 
 type AssetFormData = {
   _id?: string;
@@ -92,10 +93,10 @@ const FleetAssetsManagement = () => {
       ? trucks
       : trucks.filter((truck) => truck.type === filterType);
 
-  if (isLoading) return <div className="text-white p-4">Loading...</div>;
   if (isError)
     return <div className="text-red-500 p-4">Error loading assets</div>;
 
+  if (isLoading) return <RouteLoadingSpinner />;
   return (
     <div className="p-4 space-y-6 bg-[#0f172a] text-white min-h-screen">
       {/* Header */}
@@ -171,7 +172,7 @@ const FleetAssetsManagement = () => {
                 <option value="Eduardo Hernandez">Eduardo Hernandez</option>
               </select>
               <div className="flex ml-4 gap-2">
-                <Link href={`/assets/${truck._id}`}>
+                <Link href={`/dashboard/assets/${truck._id}`}>
                   <Eye className="cursor-pointer text-green-500" />
                 </Link>
                 <Pencil

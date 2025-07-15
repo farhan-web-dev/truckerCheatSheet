@@ -64,7 +64,7 @@ export default function DriverMap() {
 
   useEffect(() => {
     loadDrivers();
-  }, [users]);
+  }, [loadDrivers]);
 
   const handleRefresh = async () => {
     await refetch?.();

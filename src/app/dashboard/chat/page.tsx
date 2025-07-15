@@ -56,7 +56,7 @@ export default function Chat() {
     };
 
     fetchUnreadCounts();
-  }, []);
+  }, [sender?._id]);
 
   useEffect(() => {
     if (receiver) {

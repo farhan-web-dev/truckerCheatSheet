@@ -38,3 +38,24 @@ export const fetchFuelAnalytics = async () => {
   const data = await res.json();
   return data;
 };
+
+export const fetchFuelByFleet = async (id: string) => {
+  const token = getCookie("authToken");
+
+  const res = await fetch(`${BASE_URL}/api/v1/fuel/fleet/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Fuel records not found");
+  }
+
+  const json = await res.json();
+  console.log("Fetched Fuel Records:", json.data);
+
+  return json.data || [];
+};

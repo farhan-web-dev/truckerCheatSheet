@@ -1,6 +1,9 @@
 "use client";
 import { Users, Truck, MapPin } from "lucide-react";
-import { useUserVeiw } from "@/hooks/useUser";
+import { useSendGpsRequest, useUserVeiw } from "@/hooks/useUser";
+import RouteLoadingSpinner from "@/components/RouteLoadingSpinner";
+import { useTruckVeiw } from "@/hooks/useTruck";
+import toast from "react-hot-toast";
 
 interface User {
   _id: string;
@@ -12,8 +15,10 @@ interface User {
 }
 const Dashboard = () => {
   const { data, isLoading, error } = useUserVeiw();
+  const { data: trucks } = useTruckVeiw();
+  const { mutate: sendGpsRequest, isPending } = useSendGpsRequest();
 
-  if (isLoading) return <div>isloading...................</div>;
+  if (isLoading) return <RouteLoadingSpinner />;
 
   const drivers =
     (data as User[])?.filter((driver) => driver.role === "driver") || [];
@@ -30,8 +35,23 @@ const Dashboard = () => {
     const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     return createDate >= sevenDaysAgo;
   });
+  const handleRequestGps = (email: string) => {
+    if (!email) {
+      toast.error("Driver email is missing");
+      return;
+    }
 
-  console.log(thisWeekDrivers);
+    sendGpsRequest(email, {
+      onSuccess: () => {
+        toast.success(`📧 GPS request sent to ${email}`);
+      },
+      onError: (err: any) => {
+        const message = err?.message || "❌ Failed to send GPS request";
+        toast.error(message);
+      },
+    });
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
       {/* Top Cards */}
@@ -51,7 +71,7 @@ const Dashboard = () => {
       <div className="bg-[#121A2F] rounded-lg p-4 flex justify-between items-center">
         <div>
           <p className="text-gray-400">Fleet Vehicles</p>
-          <h2 className="text-3xl font-bold text-white">18</h2>
+          <h2 className="text-3xl font-bold text-white">{trucks?.length}</h2>
           <p className="text-sm text-gray-400">3 in maintenance</p>
         </div>
         <div className="bg-green-700 p-2 rounded-md">
@@ -120,9 +140,14 @@ const Dashboard = () => {
           >
             <div>
               <p className="font-semibold">{driver.name}</p>
+              <p className="text-sm">{driver.email}</p>
             </div>
-            <button className="text-xs bg-blue-600 text-white px-3 py-1 rounded-md">
-              Request GPS
+            <button
+              onClick={() => handleRequestGps(driver.email)}
+              disabled={isPending}
+              className="text-xs bg-blue-600 text-white px-3 py-1 rounded-md"
+            >
+              {isPending ? "Sending..." : "Request GPS"}
             </button>
           </div>
         ))}
