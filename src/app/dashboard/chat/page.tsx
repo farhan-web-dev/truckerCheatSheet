@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import socket from "@/lib/socket";
 import { Message, User } from "@/types";
-import UserList from "@/components/UserList";
+import UserList from "@/components/userList";
 import { getCookie } from "cookies-next";
 import { useLoginUserVeiw } from "@/hooks/useUser";
 import {
