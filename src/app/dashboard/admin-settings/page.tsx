@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bell, Shield, Settings, User } from "lucide-react";
-import { useUpdateUser } from "@/hooks/useUser";
+import { useUpdateUser, useLoginUserVeiw } from "@/hooks/useUser";
 import NotificationSettings from "@/components/NotificationSettings";
 import ChangePassword from "@/components/ChangePassword";
+import AdminPreferences from "@/components/AdminPrefrences";
 
 const tabs = [
   { name: "Profile Settings", icon: <User className="w-4 h-4 mr-2" /> },
@@ -19,12 +20,22 @@ export default function AdminSettings() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
+  const { data: loginUser } = useLoginUserVeiw();
   const { mutate: updateUser, isPending } = useUpdateUser();
+
+  // Set initial values from logged-in user
+  useEffect(() => {
+    if (loginUser) {
+      setName(loginUser.name || "");
+      setEmail(loginUser.email || "");
+    }
+  }, [loginUser]);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setProfilePhoto(file);
   };
+
   const handleSubmit = () => {
     const formData = new FormData();
     formData.append("name", name);
@@ -33,19 +44,19 @@ export default function AdminSettings() {
       formData.append("profileUrl", profilePhoto);
     }
 
-    for (const [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
-
-    updateUser({ updatedData: formData });
-    setName("");
-    setEmail("");
-    setProfilePhoto(null);
+    updateUser(
+      { updatedData: formData },
+      {
+        onSuccess: () => {
+          setProfilePhoto(null);
+        },
+      }
+    );
   };
 
   return (
     <div className="bg-[#0f172a] min-h-screen p-6 text-white">
-      <div className=" mx-auto bg-[#1e293b] p-8 rounded-lg shadow-lg">
+      <div className="mx-auto bg-[#1e293b] p-8 rounded-lg shadow-lg ">
         <h1 className="text-3xl font-bold mb-1">Admin Settings</h1>
         <p className="text-gray-400 mb-6">
           Manage your admin profile, notifications, and preferences
@@ -75,9 +86,23 @@ export default function AdminSettings() {
             {/* Profile Photo */}
             <div className="flex items-center space-x-6">
               <div className="relative">
-                <div className="w-28 h-28 rounded-full bg-blue-600 flex items-center justify-center text-4xl font-bold">
-                  {name ? name[0].toUpperCase() : "A"}
-                </div>
+                {profilePhoto ? (
+                  <img
+                    src={URL.createObjectURL(profilePhoto)}
+                    alt="Preview"
+                    className="w-28 h-28 rounded-full object-cover"
+                  />
+                ) : loginUser?.profileUrl ? (
+                  <img
+                    src={loginUser.profileUrl}
+                    alt="Profile"
+                    className="w-28 h-28 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-28 h-28 rounded-full bg-blue-600 flex items-center justify-center text-4xl font-bold">
+                    {name ? name[0].toUpperCase() : "A"}
+                  </div>
+                )}
               </div>
               <div>
                 <label
@@ -134,19 +159,8 @@ export default function AdminSettings() {
         )}
 
         {activeTab === "Notifications" && <NotificationSettings />}
-
-        {activeTab === "Security" && (
-          <div className="text-gray-300">
-            <ChangePassword />
-          </div>
-        )}
-
-        {activeTab === "Preferences" && (
-          <div className="text-gray-300">
-            <h2 className="text-xl font-semibold mb-4">Preferences</h2>
-            <p>Preference settings content goes here...</p>
-          </div>
-        )}
+        {activeTab === "Security" && <ChangePassword />}
+        {activeTab === "Preferences" && <AdminPreferences />}
       </div>
     </div>
   );

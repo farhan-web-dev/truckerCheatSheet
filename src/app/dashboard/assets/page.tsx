@@ -9,6 +9,7 @@ import { AssetModal } from "@/components/AssetModal";
 import { useCreateTruck, useUpdateTruck } from "@/hooks/useTruckMutation";
 import { useDeleteTruck } from "@/hooks/useDeleteTruck";
 import RouteLoadingSpinner from "@/components/RouteLoadingSpinner";
+import { useUserVeiw } from "@/hooks/useUser";
 
 type AssetFormData = {
   _id?: string;
@@ -27,6 +28,7 @@ const typeClasses = {
 };
 
 const FleetAssetsManagement = () => {
+  const { data, isLoading: isLoadingUsers, error, refetch } = useUserVeiw();
   const { data: trucks = [], isLoading, isError } = useTruckVeiw();
   const [filterType, setFilterType] = useState<"All" | "truck" | "trailer">(
     "All"
@@ -160,17 +162,26 @@ const FleetAssetsManagement = () => {
             </div>
             <div>{truck.model}</div>
             <div>{truck.year}</div>
-            <div>2343 mi</div>
+            <div>0 mi</div>
             <div className="flex items-center gap-2">
               <select
-                defaultValue={truck?.assignedDriver?.name}
+                value={truck?.assignedDriver?._id || ""}
+                onChange={(e) =>
+                  updateTruck.mutate({
+                    ...truck,
+                    assignedDriver: e.target.value || null, // use driver ID
+                  })
+                }
                 className="bg-gray-700 border-none text-white text-sm rounded-md px-3 py-1"
               >
-                <option value="Unassigned">Unassigned</option>
-                <option value="Carlos Martinez">Carlos Martinez</option>
-                <option value="Ashley Johnson">Ashley Johnson</option>
-                <option value="Eduardo Hernandez">Eduardo Hernandez</option>
+                <option value="">Unassigned</option>
+                {data?.map((user) => (
+                  <option key={user._id} value={user._id}>
+                    {user.name}
+                  </option>
+                ))}
               </select>
+
               <div className="flex ml-4 gap-2">
                 <Link href={`/dashboard/assets/${truck._id}`}>
                   <Eye className="cursor-pointer text-green-500" />
@@ -193,6 +204,7 @@ const FleetAssetsManagement = () => {
         onClose={() => setModalOpen(false)}
         onSubmit={handleSubmitAsset}
         initialData={editAsset}
+        users={data || []}
       />
     </div>
   );

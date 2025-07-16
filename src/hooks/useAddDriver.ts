@@ -1,11 +1,12 @@
 // hooks/useAddDriver.ts
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCookie } from "cookies-next";
 import { BASE_URL } from "@/lib/url";
 
 export type DriverFormData = {
   name: string;
   email: string;
+  password: string;
   gpsTracking: "enable" | "disable";
   role: "driver" | "admin";
   assignedTruck: string;
@@ -13,9 +14,10 @@ export type DriverFormData = {
 
 export const useAddDriver = () => {
   const token = getCookie("authToken");
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (newDriver: DriverFormData) => {
-      console.log("Submitting driver:", newDriver);
       const res = await fetch(`${BASE_URL}/api/v1/users`, {
         method: "POST",
         headers: {
@@ -31,6 +33,10 @@ export const useAddDriver = () => {
       }
 
       return res.json();
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 };

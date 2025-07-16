@@ -31,7 +31,7 @@ export default function DocumentTable() {
   return (
     <div>
       {/* Sort + Search Bar */}
-      <div className="flex justify-end mb-4 gap-2">
+      <div className="flex justify-end mb-4 gap-2 text-gray-600">
         <select
           value={sortBy}
           onChange={(e) =>
@@ -44,7 +44,7 @@ export default function DocumentTable() {
         </select>
         <input
           type="text"
-          placeholder={`{<Search />} " Search documents...`}
+          placeholder={` Search documents...`}
           className="px-3 py-2 border border-gray-300 rounded shadow text-sm bg-white"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

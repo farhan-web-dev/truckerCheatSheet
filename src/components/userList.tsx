@@ -49,7 +49,7 @@ export default function UserList({
         />
       </div>
 
-      <ul className="overflow-y-auto flex-1">
+      <ul className="overflow-y-auto text-gray-800 flex-1">
         {filteredUsers.map((user) => {
           const last = userLastMessages[user._id];
           const initials = user.name
@@ -68,7 +68,7 @@ export default function UserList({
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-gray-700 font-bold">
                       {initials}
                     </div>
                     {user.isOnline && (
@@ -78,7 +78,7 @@ export default function UserList({
                   <div>
                     <p className="font-semibold">{user.name}</p>
                     {last?.content && (
-                      <p className="text-sm text-gray-500 truncate w-44">
+                      <p className="text-sm text-gray-700 truncate w-44">
                         {last.content}
                       </p>
                     )}

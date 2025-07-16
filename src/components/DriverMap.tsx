@@ -3,7 +3,7 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useUserVeiw } from "@/hooks/useUser";
 import { MapIcon, RefreshCcw } from "lucide-react";
 
@@ -15,6 +15,7 @@ type Driver = {
   status: "Driving" | "Rest Break" | "Loading" | "Off Duty";
   speed: number;
   lastUpdated: string;
+  assignedTruck?: { name: string };
 };
 
 const statusColorMap = {
@@ -41,7 +42,9 @@ export default function DriverMap() {
 
   const { data: users, refetch } = useUserVeiw();
 
-  const loadDrivers = () => {
+  console.log(users);
+
+  const loadDrivers = useCallback(() => {
     if (users) {
       const formattedDrivers = users
         .filter((user) => user.location?.lat && user.location?.lng)
@@ -56,11 +59,15 @@ export default function DriverMap() {
           status: user.status || "Off Duty",
           speed: user.speed || 0,
           lastUpdated: new Date().toISOString(),
+          assignedTruck: user?.assignedTruck
+            ? { name: user.assignedTruck.name }
+            : { name: "Unknown Truck" },
         }));
+
       setDrivers(formattedDrivers);
       setLastUpdated(new Date().toLocaleTimeString());
     }
-  };
+  }, [users]); // depends on `users`
 
   useEffect(() => {
     loadDrivers();
@@ -82,6 +89,8 @@ export default function DriverMap() {
     if (statusFilter === "Driving") return driver.status === "Driving";
     return driver.status !== "Driving";
   });
+
+  console.log("fd", filteredDrivers);
 
   const counts = {
     Driving: drivers.filter((d) => d.status === "Driving").length,
@@ -226,7 +235,7 @@ export default function DriverMap() {
                       }`}
                     ></div>
                     <span className="text-white font-bold text-sm">
-                      {driver.id}
+                      {driver?.assignedTruck?.name}
                     </span>
                   </div>
                   <span className="text-sm text-gray-400">2 min ago</span>

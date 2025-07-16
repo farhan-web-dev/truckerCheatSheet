@@ -13,6 +13,8 @@ import { DriverFormData, useAddDriver } from "@/hooks/useAddDriver";
 import ConnectDriverModal from "@/components/ConnectDriverModal";
 import DriverModal from "@/components/DriverModal";
 import type { DriverData } from "@/components/DriverModal";
+import { useTruckVeiw } from "@/hooks/useTruck";
+import { useRouter } from "next/navigation";
 const gpsText = {
   true: { label: "Enabled", style: "text-green-600" },
   false: { label: "Disabled", style: "text-gray-400" },
@@ -30,6 +32,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const UserTable: React.FC = () => {
+  const router = useRouter();
   const { data, isLoading, error, refetch } = useUserVeiw();
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +42,11 @@ const UserTable: React.FC = () => {
   }>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log(selectedDriver);
+  const {
+    data: trucks = [],
+    isLoading: truckLoading,
+    isError,
+  } = useTruckVeiw();
 
   const {
     register,
@@ -51,17 +58,18 @@ const UserTable: React.FC = () => {
   });
 
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [mode, setMode] = useState<"create" | "edit">("edit");
+  const [mode, setMode] = useState<"create" | "edit">("create");
   const [editData, setEditData] = useState<Partial<DriverData> | undefined>();
+
+  const handleCreate = () => {
+    setEditData(undefined);
+    setMode("create");
+    setIsOpenModal(true);
+  };
 
   const handleEdit = (driver) => {
     setEditData(driver);
     setMode("edit");
-    setIsOpenModal(true);
-  };
-  const handleCreate = () => {
-    setEditData(undefined);
-    setMode("create");
     setIsOpenModal(true);
   };
 
@@ -200,7 +208,10 @@ const UserTable: React.FC = () => {
                     Edit
                   </button>
 
-                  <button className="text-green-500 hover:underline">
+                  <button
+                    onClick={() => router.push("/dashboard/chat")}
+                    className="text-green-500 hover:underline"
+                  >
                     Message
                   </button>
                   <button
@@ -219,14 +230,16 @@ const UserTable: React.FC = () => {
         </tbody>
       </table>
       {/* Add Driver Modal */}
-      <DriverModal
-        isOpen={isOpenModal}
-        onClose={() => setIsOpenModal(false)}
-        mode={mode}
-        initialData={editData}
-        onSuccess={refetch}
-      />
-      ;
+      {isOpenModal && (
+        <DriverModal
+          isOpen={isOpenModal}
+          onClose={() => setIsOpenModal(false)}
+          mode={mode}
+          initialData={editData}
+          onSuccess={refetch}
+          trucks={trucks}
+        />
+      )}
     </div>
   );
 };

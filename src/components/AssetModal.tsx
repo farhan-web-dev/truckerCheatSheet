@@ -13,11 +13,17 @@ interface AssetFormData {
   type: "truck" | "trailer";
 }
 
+interface User {
+  _id: string;
+  name: string;
+}
+
 interface AssetModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: AssetFormData) => void;
   initialData?: AssetFormData;
+  users: User[]; // 👈 Now users are passed as a separate prop
 }
 
 export const AssetModal: React.FC<AssetModalProps> = ({
@@ -25,11 +31,12 @@ export const AssetModal: React.FC<AssetModalProps> = ({
   onClose,
   onSubmit,
   initialData,
+  users,
 }) => {
-  const [formData, setFormData] = React.useState<AssetFormData>({
+  const [formData, setFormData] = useState<AssetFormData>({
     name: "",
     model: "",
-    year: 2024,
+    year: new Date().getFullYear(),
     engineType: "",
     engineSerialNumber: "",
     assignedDriver: "",
@@ -105,13 +112,21 @@ export const AssetModal: React.FC<AssetModalProps> = ({
             onChange={handleChange}
             className="w-full border p-2 rounded"
           />
-          <input
+
+          <select
             name="assignedDriver"
-            placeholder="Assigned Driver ID"
             value={formData.assignedDriver}
             onChange={handleChange}
             className="w-full border p-2 rounded"
-          />
+          >
+            <option value="">Unassigned</option>
+            {users.map((user) => (
+              <option key={user._id} value={user._id}>
+                {user.name}
+              </option>
+            ))}
+          </select>
+
           <select
             name="type"
             value={formData.type}
@@ -122,7 +137,7 @@ export const AssetModal: React.FC<AssetModalProps> = ({
             <option value="trailer">Trailer</option>
           </select>
 
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 ">
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>

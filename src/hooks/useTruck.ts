@@ -6,7 +6,7 @@ export const useTruckVeiw = () => {
   return useQuery({
     queryKey: ["trucks"],
     queryFn: fetchTruck,
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 60,
   });
 };
 

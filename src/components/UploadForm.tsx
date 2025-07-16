@@ -1,13 +1,21 @@
 import { useState, useRef } from "react";
 import { useUploadDocument } from "@/hooks/useDocument";
-import { FileIcon } from "lucide-react"; // You can customize icon
+import { FileIcon } from "lucide-react";
+import { useUserVeiw } from "@/hooks/useUser";
+import { useTruckVeiw } from "@/hooks/useTruck";
 
 export default function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
   const [category, setCategory] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [selectedDriver, setSelectedDriver] = useState("");
+  const [selectedVehicle, setSelectedVehicle] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutateAsync: uploadDoc, isPending } = useUploadDocument();
+  const { data: users } = useUserVeiw();
+  const { data: vehicles } = useTruckVeiw();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -30,17 +38,26 @@ export default function UploadForm() {
   };
 
   const handleUpload = async () => {
-    if (!file) return;
+    if (!file || !selectedDriver || !selectedVehicle) return;
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append("category", category);
+    formData.append("expiryDate", expiryDate);
+    formData.append("driver", selectedDriver);
+    formData.append("vehicle", selectedVehicle);
+
     await uploadDoc(formData);
+
     setFile(null);
     setCategory("");
+    setExpiryDate("");
+    setSelectedDriver("");
+    setSelectedVehicle("");
   };
 
   return (
-    <div className="bg-[white] p-6 rounded-xl text-black shadow-md">
+    <div className="bg-white p-6 rounded-xl text-black shadow-md">
       <h2 className="text-xl font-semibold mb-6">Upload Documents</h2>
 
       <div
@@ -65,7 +82,6 @@ export default function UploadForm() {
         <button
           type="button"
           className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded shadow"
-          onClick={() => fileInputRef.current?.click()}
         >
           Browse Files
         </button>
@@ -78,17 +94,53 @@ export default function UploadForm() {
       </div>
 
       {file && (
-        <div className="mt-6">
-          <p className="text-sm text-gray-300">Selected file: {file.name}</p>
+        <div className="mt-6 space-y-4">
+          <p className="text-sm text-gray-700">Selected file: {file.name}</p>
+
           <input
             type="text"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="mt-2 w-full px-4 py-2 rounded bg-white text-black"
+            className="w-full px-4 py-2 rounded border"
             placeholder="Enter category"
           />
+
+          <input
+            type="date"
+            value={expiryDate}
+            onChange={(e) => setExpiryDate(e.target.value)}
+            className="w-full px-4 py-2 rounded border"
+            placeholder="Expiry date"
+          />
+
+          <select
+            value={selectedDriver}
+            onChange={(e) => setSelectedDriver(e.target.value)}
+            className="w-full px-4 py-2 rounded border"
+          >
+            <option value="">Select Driver</option>
+            {users?.map((user: any) => (
+              <option key={user._id} value={user._id}>
+                {user.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={selectedVehicle}
+            onChange={(e) => setSelectedVehicle(e.target.value)}
+            className="w-full px-4 py-2 rounded border"
+          >
+            <option value="">Select Vehicle</option>
+            {vehicles?.map((vehicle: any) => (
+              <option key={vehicle._id} value={vehicle._id}>
+                {vehicle.name || `${vehicle.type} - ${vehicle.model}`}
+              </option>
+            ))}
+          </select>
+
           <button
-            className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded"
             onClick={handleUpload}
             disabled={isPending}
           >

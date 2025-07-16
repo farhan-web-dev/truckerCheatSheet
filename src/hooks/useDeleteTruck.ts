@@ -1,13 +1,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BASE_URL } from "@/lib/url";
+import { getCookie } from "cookies-next";
 
 export const useDeleteTruck = () => {
   const queryClient = useQueryClient();
+  const token = getCookie("authToken");
 
   return useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`${BASE_URL}/api/v1/trucks/${id}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!res.ok) {

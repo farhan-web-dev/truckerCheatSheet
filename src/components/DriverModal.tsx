@@ -7,6 +7,7 @@ import { useUpdateUser, useUpdateUserWithId } from "@/hooks/useUser";
 import { useAddDriver } from "@/hooks/useAddDriver";
 import { toast } from "react-hot-toast";
 import { useEffect } from "react";
+import { useTruckVeiw } from "@/hooks/useTruck";
 
 interface Props {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface Props {
   mode: "create" | "edit";
   initialData?: Partial<DriverData>;
   onSuccess: () => void;
+  trucks: any[];
 }
 
 interface DriverFormData {
@@ -35,18 +37,29 @@ export default function DriverModal({
   mode,
   initialData = {},
   onSuccess,
+  trucks,
 }: Props) {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<DriverFormData>();
+  } = useForm<DriverFormData>({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      role: "driver",
+      assignedTruck: "",
+      gpsTracking: "enable",
+    },
+  });
 
+  console.log("trucks", trucks);
   useEffect(() => {
-    if (!isOpen) return; // Don't reset if modal is closed
+    if (!isOpen) return;
 
-    if (mode === "edit" && initialData) {
+    if (mode === "edit" && initialData?._id) {
       reset({
         name: initialData.name || "",
         email: initialData.email || "",
@@ -54,9 +67,7 @@ export default function DriverModal({
         assignedTruck: initialData.assignedTruck || "",
         gpsTracking: initialData.gpsTracking || "enable",
       });
-    }
-
-    if (mode === "create") {
+    } else if (mode === "create") {
       reset({
         name: "",
         email: "",
@@ -66,7 +77,7 @@ export default function DriverModal({
         gpsTracking: "enable",
       });
     }
-  }, [mode, initialData, reset]);
+  }, [isOpen, mode, initialData?._id]);
 
   const addMutation = useAddDriver();
   const updateMutation = useUpdateUserWithId();
@@ -197,10 +208,19 @@ export default function DriverModal({
               <label className="block text-sm text-gray-600">
                 Assigned Truck
               </label>
-              <input
-                {...register("assignedTruck")}
+              <select
+                {...register("assignedTruck", {
+                  required: "Assigned truck is required",
+                })}
                 className="w-full px-3 py-2 border rounded text-black"
-              />
+              >
+                <option value="">Select a truck</option>
+                {trucks.map((truck) => (
+                  <option key={truck._id} value={truck._id}>
+                    {truck.name}
+                  </option>
+                ))}
+              </select>
               {errors.assignedTruck && (
                 <p className="text-red-500 text-xs">
                   {errors.assignedTruck.message}
