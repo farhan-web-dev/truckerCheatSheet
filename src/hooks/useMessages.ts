@@ -39,7 +39,7 @@ export const useLastMessages = (userId?: string) =>
         }
       );
       const data = await res.json();
-      console.log("data q", data);
+      // console.log("data q", data);
       return data.lastMessages || {};
     },
   });

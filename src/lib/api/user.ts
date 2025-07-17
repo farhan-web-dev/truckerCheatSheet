@@ -17,7 +17,7 @@ export const fetchUser = async () => {
   }
 
   const json = await res.json();
-  console.log("data", json?.data);
+  // console.log("data", json?.data);
   return json.data.data;
 };
 
@@ -69,7 +69,7 @@ export const updateUser = async (updatedData: FormData) => {
 };
 
 export const updateUserWithId = async (id: string, updatedData: FormData) => {
-  console.log("Sending update to backend:", id, updatedData);
+  // console.log("Sending update to backend:", id, updatedData);
   const token = getCookie("authToken");
 
   const res = await fetch(`${BASE_URL}/api/v1/users/${id}`, {

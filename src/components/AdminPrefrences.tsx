@@ -7,7 +7,7 @@ const AdminPreferences = () => {
 
   const handleSavePreferences = () => {
     const preferences = { dashboardView, timeZone, dateFormat };
-    console.log("Saved Preferences:", preferences);
+    // console.log("Saved Preferences:", preferences);
   };
 
   return (

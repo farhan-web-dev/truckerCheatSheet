@@ -62,6 +62,6 @@ export const fetchDocumentsByTruckId = async (id: string) => {
   }
 
   const json = await res.json();
-  console.log("Documents for truck:", json);
+  // console.log("Documents for truck:", json);
   return json.documents || [];
 };

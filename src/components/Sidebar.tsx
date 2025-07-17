@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
+import ClientOnly from "./ClientOnly";
 const iconProps = { size: 20, color: "white" };
 
 const menuItems = [
@@ -84,38 +85,40 @@ export default function Sidebar() {
   const [expanded, setExpanded] = useState(true);
 
   return (
-    <div
-      className={clsx(
-        "bg-[#0f172a] h-screen p-4 flex flex-col overflow-y-auto",
-        expanded ? "w-64" : "w-24"
-      )}
-    >
-      <div className="flex items-center justify-between text-white mb-6">
-        <div className="flex items-center gap-2">
-          <Truck className="text-blue-400" />
-          {expanded && (
-            <span className="text-[24px] font-bold">Fleet Admin</span>
-          )}
+    <ClientOnly>
+      <div
+        className={clsx(
+          "bg-[#0f172a] h-screen p-4 flex flex-col overflow-y-auto",
+          expanded ? "w-64" : "w-24"
+        )}
+      >
+        <div className="flex items-center justify-between text-white mb-6">
+          <div className="flex items-center gap-2">
+            <Truck className="text-blue-400" />
+            {expanded && (
+              <span className="text-[24px] font-bold">Fleet Admin</span>
+            )}
+          </div>
+          <button onClick={() => setExpanded(!expanded)}>
+            {expanded ? (
+              <X className="text-white w-[24px]" />
+            ) : (
+              <Menu className="text-white" />
+            )}
+          </button>
         </div>
-        <button onClick={() => setExpanded(!expanded)}>
-          {expanded ? (
-            <X className="text-white w-[24px]" />
-          ) : (
-            <Menu className="text-white" />
-          )}
-        </button>
-      </div>
 
-      <nav className="flex flex-col gap-2">
-        {menuItems.map(({ label, icon, href }) => (
-          <Link key={label} href={href} className="text-white">
-            <div className="flex items-center gap-3 px-4 py-3 rounded hover:bg-blue-600 transition-all">
-              {icon}
-              {expanded && <span className="ml-3 block">{label}</span>}
-            </div>
-          </Link>
-        ))}
-      </nav>
-    </div>
+        <nav className="flex flex-col gap-2">
+          {menuItems.map(({ label, icon, href }) => (
+            <Link key={label} href={href} className="text-white">
+              <div className="flex items-center gap-3 px-4 py-3 rounded hover:bg-blue-600 transition-all">
+                {icon}
+                {expanded && <span className="ml-3 block">{label}</span>}
+              </div>
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </ClientOnly>
   );
 }

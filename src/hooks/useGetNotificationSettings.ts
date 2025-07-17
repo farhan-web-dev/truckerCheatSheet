@@ -20,7 +20,7 @@ export const useGetNotificationSettings = () => {
       if (!res.ok) throw new Error("Failed to fetch settings");
 
       const data = await res.json();
-      console.log("result", data);
+      // console.log("result", data);
       return data;
     },
   });

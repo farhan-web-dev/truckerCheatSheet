@@ -42,7 +42,7 @@ export default function DriverMap() {
 
   const { data: users, refetch } = useUserVeiw();
 
-  console.log(users);
+  // console.log(users);
 
   const loadDrivers = useCallback(() => {
     if (users) {
@@ -90,7 +90,7 @@ export default function DriverMap() {
     return driver.status !== "Driving";
   });
 
-  console.log("fd", filteredDrivers);
+  // console.log("fd", filteredDrivers);
 
   const counts = {
     Driving: drivers.filter((d) => d.status === "Driving").length,

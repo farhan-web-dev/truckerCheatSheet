@@ -42,7 +42,7 @@ const AssetDetailsPage = () => {
     0
   );
   const { data: expenses } = useExpenseByTruckId(id as string);
-  console.log("Expenses:", expenses);
+  // console.log("Expenses:", expenses);
 
   const lastMaintenance = maintenance?.[maintenance.length - 1];
 
@@ -56,7 +56,7 @@ const AssetDetailsPage = () => {
     isError: fuelError,
   } = useFuelByFleet(id as string);
   const { data: documents } = useDocumentsByTruckId(id as string);
-  console.log("doc", documents);
+  // console.log("doc", documents);
 
   if (isLoading) return <RouteLoadingSpinner />;
   if (isError || !truck)
@@ -73,11 +73,8 @@ const AssetDetailsPage = () => {
                 title="Maintenance Cost"
                 value={`$${maintenanceCost?.toFixed(2) || "0.00"}`}
               />
-              <StatCard
-                title="Fuel Records"
-                value={truck.fuelRecords?.length}
-              />
-              <StatCard title="Documents" value={truck.documents?.length} />
+              <StatCard title="Fuel Records" value={fuelRecords?.length} />
+              <StatCard title="Documents" value={documents?.length} />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -42,7 +42,7 @@ export default function Chat() {
     sender?._id
   );
   const { data: userLastMessages = {} } = useLastMessages(sender?._id);
-  console.log("data message", userLastMessages);
+  // console.log("data message", userLastMessages);
   const { data: messages = [], refetch: refetchMessages } = useMessages(
     sender?._id,
     receiver?._id

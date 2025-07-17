@@ -41,7 +41,7 @@ const notificationsList = [
 
 const NotificationSettings = () => {
   const { data: settings, isLoading } = useGetNotificationSettings();
-  console.log("notfication", settings);
+  // console.log("notfication", settings);
   const { mutate: updateSetting } = useUpdateNotificationSettings();
 
   if (isLoading) return <p className="text-gray-300">Loading...</p>;

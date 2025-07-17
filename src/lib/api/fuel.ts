@@ -55,7 +55,7 @@ export const fetchFuelByFleet = async (id: string) => {
   }
 
   const json = await res.json();
-  console.log("Fetched Fuel Records:", json.data);
+  // console.log("Fetched Fuel Records:", json.data);
 
   return json.data || [];
 };

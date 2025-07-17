@@ -8,6 +8,7 @@ import SetupQuickViewModal from "./SetupQuickVeiwModal";
 import NotificationBell from "./NotificationModal";
 import { useUnreadCounts } from "@/hooks/message";
 import { useLoginUserVeiw } from "@/hooks/useUser";
+import ClientOnly from "./ClientOnly";
 
 const routeToTitleMap: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -41,7 +42,7 @@ const Header = () => {
   );
 
   return (
-    <>
+    <ClientOnly>
       <header className="bg-[#0E1423] text-white flex items-center justify-between px-6 py-4">
         {/* Left side: Title */}
         <div>
@@ -97,7 +98,7 @@ const Header = () => {
       {isModalOpen && (
         <SetupQuickViewModal onClose={() => setIsModalOpen(false)} />
       )}
-    </>
+    </ClientOnly>
   );
 };
 

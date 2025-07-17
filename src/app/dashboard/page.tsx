@@ -3,7 +3,11 @@ import { Users, Truck, MapPin } from "lucide-react";
 import { useSendGpsRequest, useUserVeiw } from "@/hooks/useUser";
 import RouteLoadingSpinner from "@/components/RouteLoadingSpinner";
 import { useTruckVeiw } from "@/hooks/useTruck";
+import { useNotifications } from "@/hooks/useNotification";
 import toast from "react-hot-toast";
+import { formatDistanceToNowStrict, parseISO } from "date-fns";
+import { useState } from "react";
+import ClientOnly from "@/components/ClientOnly";
 
 interface User {
   _id: string;
@@ -13,10 +17,15 @@ interface User {
   gpsTracking: string;
   createdAt: string;
 }
+
 const Dashboard = () => {
   const { data, isLoading, error } = useUserVeiw();
   const { data: trucks } = useTruckVeiw();
-  const { mutate: sendGpsRequest, isPending } = useSendGpsRequest();
+  const [sendingToEmail, setSendingToEmail] = useState<string | null>(null);
+  const { mutate: sendGpsRequest } = useSendGpsRequest();
+
+  const { data: notifications = [], isLoading: notifLoading } =
+    useNotifications();
 
   if (isLoading) return <RouteLoadingSpinner />;
 
@@ -35,124 +44,140 @@ const Dashboard = () => {
     const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     return createDate >= sevenDaysAgo;
   });
+
   const handleRequestGps = (email: string) => {
     if (!email) {
       toast.error("Driver email is missing");
       return;
     }
 
+    setSendingToEmail(email); // 👈 Set current user
+
     sendGpsRequest(email, {
       onSuccess: () => {
         toast.success(`📧 GPS request sent to ${email}`);
+        setSendingToEmail(null); // reset after success
       },
       onError: (err: any) => {
         const message = err?.message || "❌ Failed to send GPS request";
         toast.error(message);
+        setSendingToEmail(null); // reset after error
       },
     });
   };
 
+  const recentNotifications = (notifications || []).filter((notif: any) => {
+    const notifDate = new Date(notif.createdAt).getTime();
+    const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+    return notifDate >= twentyFourHoursAgo;
+  });
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
-      {/* Top Cards */}
-      <div className="bg-[#121A2F] rounded-lg p-4 flex justify-between items-center">
-        <div>
-          <p className="text-gray-400">Active Drivers</p>
-          <h2 className="text-3xl font-bold text-white">{drivers.length}</h2>
-          <p className="text-sm text-gray-400">
-            +{thisWeekDrivers.length} this week
+    <ClientOnly>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
+        {/* Top Cards */}
+        <div className="bg-[#121A2F] rounded-lg p-4 flex justify-between items-center">
+          <div>
+            <p className="text-gray-400">Active Drivers</p>
+            <h2 className="text-3xl font-bold text-white">{drivers.length}</h2>
+            <p className="text-sm text-gray-400">
+              +{thisWeekDrivers.length} this week
+            </p>
+          </div>
+          <div className="bg-blue-700 p-2 rounded-md">
+            <Users className="text-white" />
+          </div>
+        </div>
+
+        <div className="bg-[#121A2F] rounded-lg p-4 flex justify-between items-center">
+          <div>
+            <p className="text-gray-400">Fleet Vehicles</p>
+            <h2 className="text-3xl font-bold text-white">{trucks?.length}</h2>
+            <p className="text-sm text-gray-400">3 in maintenance</p>
+          </div>
+          <div className="bg-green-700 p-2 rounded-md">
+            <Truck className="text-white" />
+          </div>
+        </div>
+
+        {/* Bottom Left: Recent Activity */}
+        <div className="bg-[#121A2F] rounded-lg p-4">
+          <h3 className="text-white text-lg font-semibold mb-4">
+            Recent Activity
+          </h3>
+
+          {notifLoading ? (
+            <p className="text-gray-400">Loading...</p>
+          ) : recentNotifications.length === 0 ? (
+            <p className="text-gray-500">
+              No recent activity in the last 24 hours.
+            </p>
+          ) : (
+            recentNotifications.map((activity: any, idx: number) => (
+              <div
+                key={activity._id || idx}
+                className="bg-[#2B3448] rounded-md p-3 mb-3 text-white flex items-start gap-2"
+              >
+                <span className="w-2 h-2 mt-2 rounded-full bg-blue-400"></span>
+                <div>
+                  <p>{activity.message}</p>
+                  <p className="text-sm text-gray-400">
+                    {formatDistanceToNowStrict(parseISO(activity.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Bottom Right: Drivers Online */}
+        <div className="bg-[#121A2F] rounded-lg p-4">
+          <h3 className="text-white text-lg font-semibold">Drivers Online</h3>
+
+          {/* GPS Enabled */}
+          <p className="text-green-400 text-sm mt-3 mb-2">
+            GPS Tracking Enabled
           </p>
-        </div>
-        <div className="bg-blue-700 p-2 rounded-md">
-          <Users className="text-white" />
-        </div>
-      </div>
-
-      <div className="bg-[#121A2F] rounded-lg p-4 flex justify-between items-center">
-        <div>
-          <p className="text-gray-400">Fleet Vehicles</p>
-          <h2 className="text-3xl font-bold text-white">{trucks?.length}</h2>
-          <p className="text-sm text-gray-400">3 in maintenance</p>
-        </div>
-        <div className="bg-green-700 p-2 rounded-md">
-          <Truck className="text-white" />
-        </div>
-      </div>
-
-      {/* Bottom Cards */}
-      <div className="bg-[#121A2F] rounded-lg p-4">
-        <h3 className="text-white text-lg font-semibold mb-4">
-          Recent Activity
-        </h3>
-
-        {[
-          {
-            message: "Carlos Martinez submitted fuel receipt ($180.50)",
-            time: "2 hours ago",
-          },
-          {
-            message: "Truck #A-402 completed oil change",
-            time: "4 hours ago",
-          },
-          {
-            message: "New message from Driver Ashley Johnson",
-            time: "6 hours ago",
-          },
-        ].map((activity, idx) => (
-          <div
-            key={idx}
-            className="bg-[#2B3448] rounded-md p-3 mb-3 text-white flex items-start gap-2"
-          >
-            <span className="w-2 h-2 mt-2 rounded-full bg-blue-400"></span>
-            <div>
-              <p>{activity.message}</p>
-              <p className="text-sm text-gray-400">{activity.time}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="bg-[#121A2F] rounded-lg p-4">
-        <h3 className="text-white text-lg font-semibold">Drivers Online</h3>
-
-        {/* GPS Enabled */}
-        <p className="text-green-400 text-sm mt-3 mb-2">GPS Tracking Enabled</p>
-        {enableGpsDrivers.map((driver) => (
-          <div
-            key={driver._id}
-            className="bg-[#1A2D2B] text-green-300 p-3 rounded-md mb-2 flex justify-between items-center"
-          >
-            <div>
-              <p className="font-semibold">{driver.name}</p>
-              <p className="text-sm">{driver.email}</p>{" "}
-              {/* You can replace with location if available */}
-            </div>
-            <MapPin size={16} />
-          </div>
-        ))}
-
-        {/* GPS Disabled */}
-        <p className="text-red-400 text-sm mt-4 mb-2">GPS Tracking Disabled</p>
-        {disableGpsDrivers.map((driver) => (
-          <div
-            key={driver._id}
-            className="bg-[#3A1D1D] text-red-300 p-3 rounded-md flex justify-between items-center"
-          >
-            <div>
-              <p className="font-semibold">{driver.name}</p>
-              <p className="text-sm">{driver.email}</p>
-            </div>
-            <button
-              onClick={() => handleRequestGps(driver.email)}
-              disabled={isPending}
-              className="text-xs bg-blue-600 text-white px-3 py-1 rounded-md"
+          {enableGpsDrivers.map((driver) => (
+            <div
+              key={driver._id}
+              className="bg-[#1A2D2B] text-green-300 p-3 rounded-md mb-2 flex justify-between items-center"
             >
-              {isPending ? "Sending..." : "Request GPS"}
-            </button>
-          </div>
-        ))}
+              <div>
+                <p className="font-semibold">{driver.name}</p>
+                <p className="text-sm">{driver.email}</p>
+              </div>
+              <MapPin size={16} />
+            </div>
+          ))}
+
+          {/* GPS Disabled */}
+          <p className="text-red-400 text-sm mt-4 mb-2">
+            GPS Tracking Disabled
+          </p>
+          {disableGpsDrivers.map((driver) => (
+            <div
+              key={driver._id}
+              className="bg-[#3A1D1D] text-red-300 p-3 rounded-md flex justify-between items-center"
+            >
+              <div>
+                <p className="font-semibold">{driver.name}</p>
+                <p className="text-sm">{driver.email}</p>
+              </div>
+              <button
+                onClick={() => handleRequestGps(driver.email)}
+                disabled={sendingToEmail === driver.email}
+                className="text-xs bg-blue-600 text-white px-3 py-1 rounded-md"
+              >
+                {sendingToEmail === driver.email ? "Sending..." : "Request GPS"}
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </ClientOnly>
   );
 };
 

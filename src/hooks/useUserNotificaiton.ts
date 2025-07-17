@@ -9,7 +9,7 @@ export function useUserNotifications() {
   useEffect(() => {
     const handleNewUser = (data: any) => {
       toast.success(data.message); // Or custom UI
-      console.log("📩 New user notification:", data);
+      // console.log("📩 New user notification:", data);
     };
 
     socket.on("new-user-created", handleNewUser);

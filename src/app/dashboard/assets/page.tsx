@@ -10,6 +10,7 @@ import { useCreateTruck, useUpdateTruck } from "@/hooks/useTruckMutation";
 import { useDeleteTruck } from "@/hooks/useDeleteTruck";
 import RouteLoadingSpinner from "@/components/RouteLoadingSpinner";
 import { useUserVeiw } from "@/hooks/useUser";
+import toast from "react-hot-toast";
 
 type AssetFormData = {
   _id?: string;
@@ -42,34 +43,39 @@ const FleetAssetsManagement = () => {
   const handleOpenAdd = () => {
     setEditAsset(undefined);
     setModalOpen(true);
+    toast.success("🆕 Add Truck form opened");
   };
 
   const handleEdit = (asset: any) => {
     setEditAsset(asset);
     setModalOpen(true);
+    toast.success(`✏️ Editing truck: ${asset?.name || "Unnamed Truck"}`);
   };
 
   const createTruck = useCreateTruck();
   const updateTruck = useUpdateTruck();
-
   const handleSubmitAsset = (formData: AssetFormData) => {
+    const handleError = (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "❌ Something went wrong!";
+      toast.error(errorMessage);
+    };
+
     if (formData._id) {
       updateTruck.mutate(formData, {
         onSuccess: () => {
-          console.log("Truck updated successfully");
+          toast.success("🚛 Truck updated successfully!");
         },
-        onError: (error) => {
-          console.error("Update failed:", error);
-        },
+        onError: handleError,
       });
     } else {
       createTruck.mutate(formData, {
         onSuccess: () => {
-          console.log("Truck created successfully");
+          toast.success("🚚 New truck created successfully!");
         },
-        onError: (error) => {
-          console.error("Create failed:", error);
-        },
+        onError: handleError,
       });
     }
   };
@@ -80,11 +86,14 @@ const FleetAssetsManagement = () => {
     if (confirm("Are you sure you want to delete this truck?")) {
       deleteTruck.mutate(id, {
         onSuccess: () => {
-          console.log("Truck deleted");
-          // toast.success("Deleted!") or close modal, etc.
+          toast.success("🚛 Truck deleted successfully!");
         },
-        onError: (error) => {
-          console.error("Delete failed:", error);
+        onError: (error: any) => {
+          const errorMessage =
+            error?.response?.data?.message ||
+            error?.message ||
+            "❌ Failed to delete truck.";
+          toast.error(errorMessage);
         },
       });
     }

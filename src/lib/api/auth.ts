@@ -8,7 +8,7 @@ export interface LoginPayload {
 }
 
 export const loginUser = async (payload: LoginPayload) => {
-  const response = await fetch(`${BASE_URL}/api/v1/users/login`, {
+  const response = await fetch(`${BASE_URL}/api/v1/users/admin-login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -22,7 +22,7 @@ export const loginUser = async (payload: LoginPayload) => {
   }
 
   const json = await response.json();
-  console.log("Login success:", json);
+  // console.log("Login success:", json);
 
   return json; // typically contains user + token
 };
@@ -35,7 +35,7 @@ export interface UpdatePasswordPayload {
 
 export const updatePassword = async (payload: UpdatePasswordPayload) => {
   const token = getCookie("authToken");
-  console.log(token);
+  // console.log(token);
   const response = await fetch(`${BASE_URL}/api/v1/users/updateMyPassword`, {
     method: "PATCH",
     headers: {
@@ -51,6 +51,6 @@ export const updatePassword = async (payload: UpdatePasswordPayload) => {
   }
 
   const json = await response.json();
-  console.log("Password update success:", json);
+  // console.log("Password update success:", json);
   return json;
 };

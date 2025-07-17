@@ -76,7 +76,7 @@ const UserTable: React.FC = () => {
   const filteredData = data?.filter((user: any) =>
     user.name.toLowerCase().includes(search.toLowerCase())
   );
-  console.log(filteredData);
+  // console.log(filteredData);
 
   return (
     <div className="p-6 space-y-6">

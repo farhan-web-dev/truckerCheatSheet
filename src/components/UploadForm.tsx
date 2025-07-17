@@ -3,6 +3,7 @@ import { useUploadDocument } from "@/hooks/useDocument";
 import { FileIcon } from "lucide-react";
 import { useUserVeiw } from "@/hooks/useUser";
 import { useTruckVeiw } from "@/hooks/useTruck";
+import toast from "react-hot-toast";
 
 export default function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -38,7 +39,10 @@ export default function UploadForm() {
   };
 
   const handleUpload = async () => {
-    if (!file || !selectedDriver || !selectedVehicle) return;
+    if (!file || !selectedDriver || !selectedVehicle) {
+      toast.error("⚠️ Please fill in all required fields.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("file", file);
@@ -47,13 +51,21 @@ export default function UploadForm() {
     formData.append("driver", selectedDriver);
     formData.append("vehicle", selectedVehicle);
 
-    await uploadDoc(formData);
+    try {
+      await uploadDoc(formData);
+      toast.success("📄 Document uploaded successfully!");
 
-    setFile(null);
-    setCategory("");
-    setExpiryDate("");
-    setSelectedDriver("");
-    setSelectedVehicle("");
+      // Reset form
+      setFile(null);
+      setCategory("");
+      setExpiryDate("");
+      setSelectedDriver("");
+      setSelectedVehicle("");
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message || error?.message || "❌ Upload failed!";
+      toast.error(errorMessage);
+    }
   };
 
   return (

@@ -55,7 +55,7 @@ export default function DriverModal({
     },
   });
 
-  console.log("trucks", trucks);
+  // console.log("trucks", trucks);
   useEffect(() => {
     if (!isOpen) return;
 
@@ -85,10 +85,10 @@ export default function DriverModal({
   const isLoading =
     addMutation.status === "pending" || updateMutation.status === "pending";
 
-  console.log(mode);
+  // console.log(mode);
   const onSubmit = (formData: DriverFormData) => {
-    console.log("mode", mode);
-    console.log("onSubmit triggered with data:", formData);
+    // console.log("mode", mode);
+    // console.log("onSubmit triggered with data:", formData);
 
     const mutationOptions = {
       onSuccess: () => {
@@ -99,8 +99,13 @@ export default function DriverModal({
         onClose();
         onSuccess(); // refetch
       },
-      onError: () => {
-        toast.error("Something went wrong!");
+      onError: (error: any) => {
+        // Extract error message safely
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.message ||
+          "Something went wrong!";
+        toast.error(errorMessage);
       },
     };
 
@@ -120,7 +125,7 @@ export default function DriverModal({
         assignedTruck: formData.assignedTruck,
       };
 
-      console.log("📦 Final cleaned update payload:", cleanedData);
+      // console.log("📦 Final cleaned update payload:", cleanedData);
 
       updateMutation.mutate(
         {

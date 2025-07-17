@@ -14,7 +14,7 @@ const ChangePassword = () => {
   } = useUpdatePassword();
 
   const handleChangePassword = () => {
-    console.log("Changing password...");
+    // console.log("Changing password...");
     if (!currentPassword || !newPassword || !confirmNewPassword) {
       alert("All fields are required.");
       return;

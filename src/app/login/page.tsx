@@ -18,7 +18,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const data = await loginUser({ email, password });
-      console.log("Login success:", data);
+      // console.log("Login success:", data);
       // optionally store token in localStorage/cookie
       router.push("/dashboard");
     } catch (error: any) {

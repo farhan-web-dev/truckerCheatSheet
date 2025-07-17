@@ -19,7 +19,7 @@ export const fetchTruck = async () => {
 
   const json = await res.json();
 
-  console.log("Fetched trucks:", json.data.trucks);
+  // console.log("Fetched trucks:", json.data.trucks);
 
   return json.data.trucks;
 };
@@ -42,7 +42,7 @@ export const fetchTruckById = async (id: string) => {
 
   const json = await res.json();
 
-  console.log("Fetched truck:", json.data.truck);
+  // console.log("Fetched truck:", json.data.truck);
 
   return json.data.truck;
 };

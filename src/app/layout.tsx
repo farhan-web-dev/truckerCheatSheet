@@ -1,13 +1,16 @@
 // app/layout.tsx
 import "@/styles/globals.css";
 import React from "react";
-import { ReactQueryProvider } from "@/providers/ReactQueryProvider"; // ✅ Import this
+import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
 import RouteLoadingSpinner from "@/components/RouteLoadingSpinner";
 import { Toaster } from "react-hot-toast";
 
 export const metadata = {
-  title: "Fleet Admin",
-  description: "Fleet management dashboard",
+  title: "Wynn | The Smartest Deisel Mechanic Ever | Trucker Cheat Sheet",
+  description: "Trucker Cheat Sheet Admin Panel",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
