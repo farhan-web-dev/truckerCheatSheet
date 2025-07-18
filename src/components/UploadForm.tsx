@@ -41,7 +41,7 @@ export default function UploadForm() {
   const handleUpload = async () => {
     if (!file || !selectedDriver || !selectedVehicle) {
       toast.error("⚠️ Please fill in all required fields.");
-      console.log("upload");
+      // console.log("upload");
       return;
     }
 
