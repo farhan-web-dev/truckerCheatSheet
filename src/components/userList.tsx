@@ -37,7 +37,7 @@ export default function UserList({
     return <div className="p-4 text-red-600">Failed to load users</div>;
 
   return (
-    <div className="w-1/4 border-r bg-white h-full flex flex-col">
+    <div className="w-full md:w-[300px] border-r bg-white h-full flex flex-col">
       <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
         <h2 className="text-lg font-semibold">Chats</h2>
         <input

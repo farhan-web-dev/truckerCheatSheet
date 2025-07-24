@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Switch } from "@headlessui/react";
 import { useGetNotificationSettings } from "@/hooks/useGetNotificationSettings";
 import { useUpdateNotificationSettings } from "@/hooks/useUpdateNotification";
-import socket from "@/lib/socket";
 
 const notificationsList = [
   {
@@ -41,7 +40,6 @@ const notificationsList = [
 
 const NotificationSettings = () => {
   const { data: settings, isLoading } = useGetNotificationSettings();
-  // console.log("notfication", settings);
   const { mutate: updateSetting } = useUpdateNotificationSettings();
 
   if (isLoading) return <p className="text-gray-300">Loading...</p>;
@@ -52,21 +50,32 @@ const NotificationSettings = () => {
   };
 
   return (
-    <div className="bg-[#1c2434] text-gray-200 p-6 rounded-md w-full mx-auto text-md">
-      <h2 className="text-lg font-semibold mb-6">Notification Preferences</h2>
+    <div className="bg-[#1c2434] text-gray-200 p-4 sm:p-6 rounded-md w-full mx-auto">
+      <h2 className="text-lg sm:text-xl font-semibold mb-6">
+        Notification Preferences
+      </h2>
+
       <div className="space-y-6">
-        {notificationsList?.map((item) => (
-          <div key={item.key} className="flex justify-between items-center">
+        {notificationsList.map((item) => (
+          <div
+            key={item.key}
+            className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0"
+          >
             <div>
-              <p className="font-medium text-gray-100">{item.name}</p>
-              <p className="text-gray-400 text-xs">{item.description}</p>
+              <p className="font-medium text-gray-100 text-sm sm:text-base">
+                {item.name}
+              </p>
+              <p className="text-gray-400 text-xs sm:text-sm">
+                {item.description}
+              </p>
             </div>
+
             <Switch
               checked={settings[item.key]}
               onChange={() => toggleSetting(item.key)}
               className={`${
                 settings?.[item.key] ? "bg-blue-600" : "bg-gray-600"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200`}
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 mt-2 sm:mt-0`}
             >
               <span
                 className={`${

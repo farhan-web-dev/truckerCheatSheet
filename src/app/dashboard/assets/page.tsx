@@ -36,6 +36,7 @@ const FleetAssetsManagement = () => {
   );
 
   const [isModalOpen, setModalOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [editAsset, setEditAsset] = useState<AssetFormData | undefined>(
     undefined
   );
@@ -43,7 +44,6 @@ const FleetAssetsManagement = () => {
   const handleOpenAdd = () => {
     setEditAsset(undefined);
     setModalOpen(true);
-    toast.success("🆕 Add Truck form opened");
   };
 
   const handleEdit = (asset: any) => {
@@ -146,9 +146,13 @@ const FleetAssetsManagement = () => {
         </div>
       </div>
 
+      {/* Mobile View (only show Unit # heading) */}
+      <div className="block md:hidden p-4 font-semibold text-gray-300 border-b border-gray-700">
+        <div>Unit #</div>
+      </div>
       {/* Table */}
       <div className="bg-[#1e293b] rounded-lg overflow-hidden">
-        <div className="grid grid-cols-7 p-4 font-semibold text-gray-300 border-b border-gray-700">
+        <div className="hidden md:grid grid-cols-7 p-4 font-semibold text-gray-300 border-b border-gray-700">
           <div>Unit #</div>
           <div>Type</div>
           <div>Make/Model</div>
@@ -160,38 +164,97 @@ const FleetAssetsManagement = () => {
 
         {filteredTrucks.map((truck) => (
           <div
-            key={truck.name}
-            className="grid grid-cols-7 items-center p-4 border-b border-gray-700 hover:bg-gray-800 transition"
+            key={truck._id}
+            className="border-b border-gray-700 hover:bg-gray-800 transition p-4"
           >
-            <div className="font-semibold text-lg">{truck.name}</div>
-            <div>
-              <span className={typeClasses[truck.type] || ""}>
-                {truck.type}
-              </span>
+            {/* Mobile View */}
+            <div className="block md:hidden">
+              <div className="text-lg font-semibold">{truck.name}</div>
+              <details className="mt-2 bg-gray-700 p-2 rounded-md text-sm">
+                <summary className="cursor-pointer text-gray-300">
+                  View Details
+                </summary>
+                <div className="mt-2 space-y-1 text-gray-200">
+                  <div>
+                    <strong>Type:</strong>{" "}
+                    <span className={typeClasses[truck.type] || ""}>
+                      {truck.type}
+                    </span>
+                  </div>
+                  <div>
+                    <strong>Model:</strong> {truck.model}
+                  </div>
+                  <div>
+                    <strong>Year:</strong> {truck.year}
+                  </div>
+                  <div>
+                    <strong>Assigned Driver:</strong>
+                    <select
+                      value={truck?.assignedDriver?._id || ""}
+                      onChange={(e) =>
+                        updateTruck.mutate({
+                          ...truck,
+                          assignedDriver: e.target.value || null,
+                        })
+                      }
+                      className="bg-gray-800 border-none text-white text-sm rounded-md px-2 py-1 mt-1 block"
+                    >
+                      <option value="">Unassigned</option>
+                      {data?.map((user) => (
+                        <option key={user._id} value={user._id}>
+                          {user.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex gap-3 mt-2">
+                    <Link href={`/dashboard/assets/${truck._id}`}>
+                      <Eye className="text-green-500" />
+                    </Link>
+                    <Pencil
+                      className="text-blue-500 cursor-pointer"
+                      onClick={() => handleEdit(truck)}
+                    />
+                    <Trash
+                      className="text-red-500 cursor-pointer"
+                      onClick={() => handleDelete(truck._id)}
+                    />
+                  </div>
+                </div>
+              </details>
             </div>
-            <div>{truck.model}</div>
-            <div>{truck.year}</div>
-            <div>0 mi</div>
-            <div className="flex items-center gap-2">
-              <select
-                value={truck?.assignedDriver?._id || ""}
-                onChange={(e) =>
-                  updateTruck.mutate({
-                    ...truck,
-                    assignedDriver: e.target.value || null, // use driver ID
-                  })
-                }
-                className="bg-gray-700 border-none text-white text-sm rounded-md px-3 py-1"
-              >
-                <option value="">Unassigned</option>
-                {data?.map((user) => (
-                  <option key={user._id} value={user._id}>
-                    {user.name}
-                  </option>
-                ))}
-              </select>
 
-              <div className="flex ml-4 gap-2">
+            {/* Desktop View */}
+            <div className="hidden md:grid grid-cols-7 items-center">
+              <div className="font-semibold text-lg">{truck.name}</div>
+              <div>
+                <span className={typeClasses[truck.type] || ""}>
+                  {truck.type}
+                </span>
+              </div>
+              <div>{truck.model}</div>
+              <div>{truck.year}</div>
+              <div>0 mi</div>
+              <div>
+                <select
+                  value={truck?.assignedDriver?._id || ""}
+                  onChange={(e) =>
+                    updateTruck.mutate({
+                      ...truck,
+                      assignedDriver: e.target.value || null,
+                    })
+                  }
+                  className="bg-gray-700 border-none text-white text-sm rounded-md px-3 py-1"
+                >
+                  <option value="">Unassigned</option>
+                  {data?.map((user) => (
+                    <option key={user._id} value={user._id}>
+                      {user.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex gap-2">
                 <Link href={`/dashboard/assets/${truck._id}`}>
                   <Eye className="cursor-pointer text-green-500" />
                 </Link>

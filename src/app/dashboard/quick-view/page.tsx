@@ -15,6 +15,7 @@ import {
   Settings,
   Eye,
 } from "lucide-react";
+import SetupQuickViewModal from "@/components/SetupQuickVeiwModal";
 
 const iconMap: Record<string, JSX.Element> = {
   "Driver & Fleet Management": <Users className="text-blue-600 w-6 h-6" />,
@@ -44,19 +45,39 @@ const hrefMap: Record<string, string> = {
 
 const QuickViewDashboard = () => {
   const [features, setFeatures] = useState<any[]>([]);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("quickView");
     if (stored) setFeatures(JSON.parse(stored));
   }, []);
 
+  const handleSaveQuickView = (updated: any[]) => {
+    setFeatures(updated);
+  };
+
   return (
     <div className="p-4">
-      <div className="bg-blue-700 text-white p-6 rounded-md mb-6">
-        <h2 className="text-2xl font-bold">Your Quick View Dashboard</h2>
-        <p className="text-sm text-white/80 mt-1">
-          Access your top 5 most-used fleet management features instantly
-        </p>
+      {showModal && (
+        <SetupQuickViewModal
+          onClose={() => setShowModal(false)}
+          onSave={handleSaveQuickView}
+        />
+      )}
+
+      <div className="bg-blue-700 text-white p-6 rounded-md mb-6 flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold">Your Quick View Dashboard</h2>
+          <p className="text-sm text-white/80 mt-1">
+            Access your top 5 most-used fleet management features instantly
+          </p>
+        </div>
+        <button
+          onClick={() => setShowModal(true)}
+          className="bg-white text-blue-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-100"
+        >
+          Edit Quick View
+        </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

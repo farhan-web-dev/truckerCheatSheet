@@ -19,11 +19,13 @@ const DriverExpenseTable = () => {
 
   return (
     <div className="bg-white text-black rounded-lg p-4">
-      <div className="flex justify-between items-center mb-4">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between gap-3 items-start sm:items-center mb-4">
         <h2 className="text-xl font-bold">Driver Expense Report</h2>
-        <div className="flex gap-2">
+
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <select
-            className="border px-2 py-1 rounded text-sm"
+            className="border px-3 py-2 rounded text-sm w-full sm:w-auto"
             value={selectedDays}
             onChange={(e) => setSelectedDays(Number(e.target.value))}
           >
@@ -34,7 +36,7 @@ const DriverExpenseTable = () => {
           </select>
 
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm w-full sm:w-auto"
             onClick={() => exportCSV(expenseData?.data?.expenses || [])}
           >
             Export Report
@@ -42,25 +44,80 @@ const DriverExpenseTable = () => {
         </div>
       </div>
 
+      {/* Table */}
       {isLoading ? (
         <p>Loading...</p>
       ) : (
-        <table className="w-full mt-4 text-sm">
-          <thead>
-            <tr className="text-left border-b">
-              <th className="py-2">DRIVER</th>
-              <th className="py-2">TYPE</th>
-              <th className="py-2">AMOUNT</th>
-              <th className="py-2">DATE</th>
-              <th className="py-2">RECEIPT</th>
-              <th className="py-2">NOTES</th>
-            </tr>
-          </thead>
-          <tbody>
+        <>
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="min-w-full text-sm text-left border-collapse">
+              <thead className="bg-gray-100 text-gray-700">
+                <tr>
+                  <th className="py-3 px-4">DRIVER</th>
+                  <th className="py-3 px-4">TYPE</th>
+                  <th className="py-3 px-4">AMOUNT</th>
+                  <th className="py-3 px-4">DATE</th>
+                  <th className="py-3 px-4">RECEIPT</th>
+                  <th className="py-3 px-4">NOTES</th>
+                </tr>
+              </thead>
+              <tbody>
+                {expenseData?.data?.expenses?.map((expense: any) => (
+                  <tr key={expense._id} className="border-t hover:bg-gray-50">
+                    <td className="py-3 px-4">
+                      {expense.driverId?.name || "Unknown"}
+                    </td>
+                    <td className="py-3 px-4">
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${
+                          typeColorMap[expense.type?.toLowerCase()] ||
+                          "bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        {expense.type}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 font-semibold">
+                      ${expense.amount.toFixed(2)}
+                    </td>
+                    <td className="py-3 px-4">
+                      {new Date(expense.date).toLocaleDateString("en-US")}
+                    </td>
+                    <td className="py-3 px-4">
+                      {expense.receiptUrl ? (
+                        <a
+                          href={expense.receiptUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline"
+                        >
+                          View
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td className="py-3 px-4">{expense.notes || "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-4">
             {expenseData?.data?.expenses?.map((expense: any) => (
-              <tr key={expense._id} className="border-b hover:bg-gray-50">
-                <td className="py-2">{expense.driverId?.name || "Unknown"}</td>
-                <td className="py-2">
+              <div
+                key={expense._id}
+                className="border rounded-lg p-4 shadow-sm bg-gray-50"
+              >
+                <p className="text-sm">
+                  <span className="font-semibold">Driver:</span>{" "}
+                  {expense.driverId?.name || "Unknown"}
+                </p>
+                <p className="text-sm">
+                  <span className="font-semibold">Type:</span>{" "}
                   <span
                     className={`px-2 py-1 rounded text-xs font-medium ${
                       typeColorMap[expense.type?.toLowerCase()] ||
@@ -69,32 +126,38 @@ const DriverExpenseTable = () => {
                   >
                     {expense.type}
                   </span>
-                </td>
-                <td className="py-2 font-semibold">
-                  ${expense.amount.toFixed(2)}
-                </td>
-                <td className="py-2">
+                </p>
+                <p className="text-sm">
+                  <span className="font-semibold">Amount:</span> $
+                  {expense.amount.toFixed(2)}
+                </p>
+                <p className="text-sm">
+                  <span className="font-semibold">Date:</span>{" "}
                   {new Date(expense.date).toLocaleDateString("en-US")}
-                </td>
-                <td className="py-2">
+                </p>
+                <p className="text-sm">
+                  <span className="font-semibold">Receipt:</span>{" "}
                   {expense.receiptUrl ? (
                     <a
                       href={expense.receiptUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600"
+                      className="text-blue-600 underline"
                     >
-                      View Receipt
+                      View
                     </a>
                   ) : (
                     "-"
                   )}
-                </td>
-                <td className="py-2">{expense.notes || "-"}</td>
-              </tr>
+                </p>
+                <p className="text-sm">
+                  <span className="font-semibold">Notes:</span>{" "}
+                  {expense.notes || "-"}
+                </p>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        </>
       )}
     </div>
   );

@@ -89,6 +89,29 @@ export const updateUserWithId = async (id: string, updatedData: FormData) => {
   return res.json();
 };
 
+export const deleteUserWithId = async (id: string) => {
+  const token = getCookie("authToken");
+
+  const res = await fetch(`${BASE_URL}/api/v1/users/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    try {
+      const error = await res.json(); // only try if it's not 204
+      throw new Error(error.message || "Failed to delete user");
+    } catch {
+      throw new Error("Failed to delete user");
+    }
+  }
+
+  // 204 = No Content → return manually
+  return { message: "User deleted successfully" };
+};
+
 export const sendGpsRequestEmail = async (email: string) => {
   const token = getCookie("authToken");
 

@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  deleteUserWithId,
   fetchLoginUser,
   fetchUser,
   generateDriverQrCode,
@@ -39,6 +40,11 @@ export const useUpdateUserWithId = () => {
   });
 };
 
+export const useDeleteUserWithId = () => {
+  return useMutation({
+    mutationFn: (id: string) => deleteUserWithId(id),
+  });
+};
 export const useSendGpsRequest = () => {
   return useMutation({
     mutationFn: (email: string) => sendGpsRequestEmail(email),

@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import socket from "@/lib/socket";
 import { Message, User } from "@/types";
 import UserList from "@/components/userList";
-import { getCookie } from "cookies-next";
 import { useLoginUserVeiw } from "@/hooks/useUser";
 import {
   useUnreadCounts,
@@ -42,7 +41,6 @@ export default function Chat() {
     sender?._id
   );
   const { data: userLastMessages = {} } = useLastMessages(sender?._id);
-  // console.log("data message", userLastMessages);
   const { data: messages = [], refetch: refetchMessages } = useMessages(
     sender?._id,
     receiver?._id
@@ -121,17 +119,35 @@ export default function Chat() {
 
   return (
     <div className="flex h-screen">
-      <UserList
-        onSelect={setReceiver}
-        currentUser={sender?._id}
-        userLastMessages={userLastMessages}
-        unreadCounts={unreadCounts}
-      />
+      {/* User List - let it decide width itself */}
+      <div
+        className={`h-full border-r ${receiver ? "hidden" : "block"} md:block`}
+      >
+        <UserList
+          onSelect={setReceiver}
+          currentUser={sender?._id}
+          userLastMessages={userLastMessages}
+          unreadCounts={unreadCounts}
+        />
+      </div>
 
-      <div className="flex-1 flex flex-col">
+      {/* Chat Panel */}
+      <div
+        className={`flex-1 flex flex-col ${
+          receiver ? "flex" : "hidden"
+        } md:flex`}
+      >
         {receiver ? (
           <>
+            {/* Chat Header */}
             <div className="bg-blue-600 text-white p-4 rounded-t flex items-center gap-3">
+              <button
+                className="md:hidden mr-2"
+                onClick={() => setReceiver(null)}
+              >
+                ←
+              </button>
+
               <div className="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center text-sm font-bold">
                 {receiver.name
                   .split(" ")
@@ -147,39 +163,47 @@ export default function Chat() {
               </div>
             </div>
 
+            {/* Messages */}
             <div className="flex-1 overflow-y-auto bg-gray-50 px-4 py-2">
-              {messages.map((msg, idx) => {
-                const isOwn =
-                  msg?.sender === sender?._id ||
-                  msg?.sender?._id === sender?._id;
+              {messages.length === 0 ? (
+                <p className="text-gray-500 text-center mt-4">
+                  No messages yet. Say hello!
+                </p>
+              ) : (
+                messages.map((msg, idx) => {
+                  const isOwn =
+                    msg?.sender === sender?._id ||
+                    msg?.sender?._id === sender?._id;
 
-                return (
-                  <div
-                    key={idx}
-                    className={`my-2 max-w-md ${
-                      isOwn ? "ml-auto text-right" : "text-left"
-                    }`}
-                  >
+                  return (
                     <div
-                      className={`inline-block px-4 py-2 rounded-lg ${
-                        isOwn
-                          ? "bg-blue-600 text-white rounded-br-none"
-                          : "bg-white text-gray-900 rounded-bl-none shadow"
+                      key={idx}
+                      className={`my-2 max-w-md ${
+                        isOwn ? "ml-auto text-right" : "text-left"
                       }`}
                     >
-                      <p>{msg.content}</p>
-                      <p className="text-xs mt-1 text-gray-400">
-                        {new Date(msg.timestamp).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
+                      <div
+                        className={`inline-block px-4 py-2 rounded-lg ${
+                          isOwn
+                            ? "bg-blue-600 text-white rounded-br-none"
+                            : "bg-white text-gray-900 rounded-bl-none shadow"
+                        }`}
+                      >
+                        <p>{msg.content}</p>
+                        <p className="text-xs mt-1 text-gray-400">
+                          {new Date(msg.timestamp).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
 
+            {/* Message Input */}
             <div className="flex text-gray-800 items-center p-2 border-t">
               <input
                 value={input}
@@ -189,16 +213,17 @@ export default function Chat() {
               />
               <button
                 onClick={sendMessage}
-                className="bg-blue-600 hover:bg-blue-700 text-gray-800 px-4 py-2 rounded-r-md"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-md"
               >
                 ➤
               </button>
             </div>
           </>
         ) : (
-          <p className="text-white text-xl text-center m-auto">
-            Select a user to chat
-          </p>
+          // Placeholder UI when no receiver selected
+          <div className="flex flex-1 items-center justify-center text-gray-500 text-lg">
+            Select a user to start chatting.
+          </div>
         )}
       </div>
     </div>

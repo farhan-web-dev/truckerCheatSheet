@@ -125,11 +125,14 @@ export default function BOLForm() {
                     BOL Number
                   </label>
                   <input
-                    disabled
                     value={formData.bolNumber}
+                    onChange={(e) =>
+                      setFormData({ ...formData, bolNumber: e.target.value })
+                    }
                     className="w-full bg-slate-700 text-white rounded px-4 py-2"
                   />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-white mb-1">
                     Pickup Date
@@ -302,8 +305,16 @@ export default function BOLForm() {
                 <input
                   type="text"
                   value={formData.carrier.name}
-                  disabled
-                  className="w-full bg-slate-700 rounded px-3 py-2 text-slate-200"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      carrier: {
+                        ...formData.carrier,
+                        name: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full bg-slate-700 text-white rounded px-4 py-2"
                 />
               </div>
 

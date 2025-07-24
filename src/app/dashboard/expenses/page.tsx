@@ -5,7 +5,6 @@ import { useExpense, useExpenseAnalytics } from "@/hooks/useExpense";
 import { useFuel, useFuelAnalytics } from "@/hooks/useFuel";
 import { exportCSV, exportJSON, exportQuickBooksFormat } from "@/lib/export";
 import { Download } from "lucide-react";
-
 import React from "react";
 
 const FuelExpenses = () => {
@@ -19,9 +18,9 @@ const FuelExpenses = () => {
   const { data: expense = [] } = useExpense();
 
   return (
-    <div className="bg-[#0d1117] text-white p-6 space-y-4">
+    <div className="bg-[#0d1117] text-white p-4 space-y-4">
       {/* === Export Buttons === */}
-      <div className="flex justify-end space-x-2">
+      <div className="flex flex-wrap justify-end gap-2">
         <button
           onClick={() => exportCSV(expense?.data?.expenses || [])}
           className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center gap-2"
@@ -46,49 +45,41 @@ const FuelExpenses = () => {
       </div>
 
       {/* Top Stats */}
-      <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white text-black rounded-lg p-4">
-          <div className="text-sm">This Week</div>
-          <div className="text-2xl font-bold">
-            ${expenseData?.data?.weekly?.totalAmount}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            title: "This Week",
+            amount: expenseData?.data?.weekly?.totalAmount,
+            count: expenseData?.data?.weekly?.totalCount,
+          },
+          {
+            title: "Fuel Costs",
+            amount: expenseData?.data?.weekly?.fuel?.amount,
+            count: expenseData?.data?.weekly?.fuel?.count,
+          },
+          {
+            title: "Maintenance",
+            amount: expenseData?.data?.weekly?.maintenance?.amount,
+            count: expenseData?.data?.weekly?.maintenance?.count,
+          },
+          {
+            title: "Total Expenses",
+            amount: expenseData?.data?.total?.totalAmount,
+            count: expenseData?.data?.total?.totalCount,
+          },
+        ].map((stat, idx) => (
+          <div key={idx} className="bg-white text-black rounded-lg p-4">
+            <div className="text-sm">{stat.title}</div>
+            <div className="text-2xl font-bold">${stat.amount}</div>
+            <div className="text-xs">{stat.count} items</div>
           </div>
-          <div className="text-xs">
-            {expenseData?.data?.weekly?.totalCount} expenses
-          </div>
-        </div>
-        <div className="bg-white text-black rounded-lg p-4">
-          <div className="text-sm">Fuel Costs</div>
-          <div className="text-2xl font-bold">
-            ${expenseData?.data?.weekly?.fuel?.amount}
-          </div>
-          <div className="text-xs">
-            {expenseData?.data?.weekly?.fuel?.count} items
-          </div>
-        </div>
-        <div className="bg-white text-black rounded-lg p-4">
-          <div className="text-sm">Maintenance</div>
-          <div className="text-2xl font-bold">
-            ${expenseData?.data?.weekly?.maintenance?.amount}
-          </div>
-          <div className="text-xs">
-            {expenseData?.data?.weekly?.maintenance?.count} items
-          </div>
-        </div>
-        <div className="bg-white text-black rounded-lg p-4">
-          <div className="text-sm">Total Expenses</div>
-          <div className="text-2xl font-bold">
-            ${expenseData?.data?.total?.totalAmount}
-          </div>
-          <div className="text-xs">
-            {expenseData?.data?.total?.totalCount} items
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Fuel Cost Analytics */}
       <div className="bg-white text-black rounded-lg p-4">
         <h2 className="text-xl font-bold">Fuel Cost Analytics</h2>
-        <div className="grid grid-cols-4 gap-4 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
           <div className="p-4 rounded bg-blue-50 text-blue-700">
             <div className="font-bold text-md">Total Gallons</div>
             <div className="text-2xl font-semibold">
@@ -120,9 +111,8 @@ const FuelExpenses = () => {
         </div>
       </div>
 
-      {/* Filtered and separated fuel cards */}
-      {/* === Fuel Cost Trend Header === */}
-      <div className="bg-white text-black p-6 rounded-lg shadow">
+      {/* Fuel Cost Trends */}
+      <div className="bg-white text-black p-4 rounded-lg shadow">
         <h2 className="text-lg font-semibold mb-2">
           Fuel Cost Trends (Last 30 Days)
         </h2>
@@ -138,9 +128,9 @@ const FuelExpenses = () => {
           </div>
         </div>
 
-        {/* === Driver / Vehicle / Station Columns === */}
-        <div className="grid grid-cols-3 gap-4 mt-6">
-          {/* === Fuel by Driver === */}
+        {/* Driver / Vehicle / Station Columns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+          {/* Fuel by Driver */}
           <div>
             <h3 className="text-gray-800 text-lg font-semibold mb-2">
               Fuel by Driver
@@ -168,7 +158,7 @@ const FuelExpenses = () => {
             ))}
           </div>
 
-          {/* === Fuel by Vehicle === */}
+          {/* Fuel by Vehicle */}
           <div>
             <h3 className="text-gray-800 text-lg font-semibold mb-2">
               Fuel by Vehicle
@@ -196,12 +186,11 @@ const FuelExpenses = () => {
             ))}
           </div>
 
-          {/* === Fuel Stations === */}
+          {/* Fuel Stations */}
           <div>
             <h3 className="text-gray-800 text-lg font-semibold mb-2">
               Fuel Stations
             </h3>
-            {/* Sample unique station entries */}
             {[
               ...new Map(
                 fuelData?.data?.map((log: any) => [log.station, log])
@@ -224,7 +213,10 @@ const FuelExpenses = () => {
         </div>
       </div>
 
-      <DriverExpenseTable />
+      {/* Responsive Table Section */}
+      <div className="overflow-x-auto">
+        <DriverExpenseTable />
+      </div>
     </div>
   );
 };

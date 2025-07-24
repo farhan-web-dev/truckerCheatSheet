@@ -158,21 +158,25 @@ const Dashboard = () => {
             GPS Tracking Disabled
           </p>
           {disableGpsDrivers.map((driver) => (
-            <div
-              key={driver._id}
-              className="bg-[#3A1D1D] text-red-300 p-3 rounded-md flex justify-between items-center"
-            >
-              <div>
+            <div key={driver._id} className="mb-4">
+              {/* Red background box */}
+              <div className="bg-[#3A1D1D] text-red-300 p-3 rounded-md">
                 <p className="font-semibold">{driver.name}</p>
                 <p className="text-sm">{driver.email}</p>
               </div>
-              <button
-                onClick={() => handleRequestGps(driver.email)}
-                disabled={sendingToEmail === driver.email}
-                className="text-xs bg-blue-600 text-white px-3 py-1 rounded-md"
-              >
-                {sendingToEmail === driver.email ? "Sending..." : "Request GPS"}
-              </button>
+
+              {/* Button below (outside red box) on mobile */}
+              <div className="mt-2 sm:mt-0 sm:-translate-y-[52px] sm:float-right">
+                <button
+                  onClick={() => handleRequestGps(driver.email)}
+                  disabled={sendingToEmail === driver.email}
+                  className="text-xs bg-blue-600 text-white px-3 py-1 rounded-md"
+                >
+                  {sendingToEmail === driver.email
+                    ? "Sending..."
+                    : "Request GPS"}
+                </button>
+              </div>
             </div>
           ))}
         </div>

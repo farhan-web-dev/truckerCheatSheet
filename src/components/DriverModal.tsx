@@ -111,8 +111,8 @@ export default function DriverModal({
 
     // Clean assignedTruck if it's an object
     const assignedTruck =
-      typeof formData.assignedTruck === "object"
-        ? (formData.assignedTruck as any)._id
+      !formData.assignedTruck || formData.assignedTruck === ""
+        ? null
         : formData.assignedTruck;
 
     if (mode === "create") {
@@ -122,7 +122,7 @@ export default function DriverModal({
 
       const cleanedData = {
         ...dataWithoutEmail,
-        assignedTruck: formData.assignedTruck,
+        assignedTruck,
       };
 
       // console.log("📦 Final cleaned update payload:", cleanedData);
@@ -185,6 +185,10 @@ export default function DriverModal({
                   type="password"
                   {...register("password", {
                     required: "Password is required",
+                    minLength: {
+                      value: 8,
+                      message: "Password must be at least 8 characters",
+                    },
                   })}
                   className="w-full px-3 py-2 border rounded text-black"
                 />
@@ -214,12 +218,11 @@ export default function DriverModal({
                 Assigned Truck
               </label>
               <select
-                {...register("assignedTruck", {
-                  required: "Assigned truck is required",
-                })}
+                {...register("assignedTruck")}
                 className="w-full px-3 py-2 border rounded text-black"
               >
-                <option value="">Select a truck</option>
+                <option value="">Unassigned</option>
+
                 {trucks.map((truck) => (
                   <option key={truck._id} value={truck._id}>
                     {truck.name}

@@ -29,7 +29,6 @@ type TabType = (typeof TABS)[number];
 
 const AssetDetailsPage = () => {
   const { id } = useParams();
-
   const { data: truck, isLoading, isError } = useTruckById(id as string);
   const {
     data: maintenance,
@@ -37,26 +36,20 @@ const AssetDetailsPage = () => {
     isError: maintenanceError,
   } = useMaintenanceByTruckId(id as string);
   const [activeTab, setActiveTab] = useState<TabType>("Overview");
+
   const maintenanceCost = maintenance?.reduce(
     (total: number, item: any) => total + item.cost,
     0
   );
   const { data: expenses } = useExpenseByTruckId(id as string);
-  // console.log("Expenses:", expenses);
-
   const lastMaintenance = maintenance?.[maintenance.length - 1];
 
   const nextMaintenanceDate = lastMaintenance?.nextServiceDate
     ? new Date(lastMaintenance.nextServiceDate).toLocaleDateString()
     : "No next maintenance scheduled";
 
-  const {
-    data: fuelRecords,
-    isLoading: fuelLoading,
-    isError: fuelError,
-  } = useFuelByFleet(id as string);
+  const { data: fuelRecords } = useFuelByFleet(id as string);
   const { data: documents } = useDocumentsByTruckId(id as string);
-  // console.log("doc", documents);
 
   if (isLoading) return <RouteLoadingSpinner />;
   if (isError || !truck)
@@ -67,7 +60,7 @@ const AssetDetailsPage = () => {
       case "Overview":
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard title="Total Receipts" value={expenses?.length} />
               <StatCard
                 title="Maintenance Cost"
@@ -79,73 +72,37 @@ const AssetDetailsPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <InfoCard title="Asset Information">
-                <p>
-                  <span className="text-gray-400">Unit Number</span>
-                  <br />
-                  <span className="font-semibold text-white">{truck.name}</span>
-                </p>
-                <p>
-                  <span className="text-gray-400">Type</span>
-                  <br />
-                  <span className="font-semibold text-white">{truck.type}</span>
-                </p>
-                <p>
-                  <span className="text-gray-400">Make & Model</span>
-                  <br />
-                  <span className="font-semibold text-white">
-                    {truck.model}
-                  </span>
-                </p>
-                <p>
-                  <span className="text-gray-400">Year</span>
-                  <br />
-                  <span className="font-semibold text-white">{truck.year}</span>
-                </p>
-                <p>
-                  <span className="text-gray-400">Current Mileage</span>
-                  <br />
-                  <span className="font-semibold text-white">
-                    {truck.currentMileage} mi
-                  </span>
-                </p>
-                <p>
-                  <span className="text-gray-400">Acquisition Date</span>
-                  <br />
-                  <span className="font-semibold text-white">
-                    {new Date(truck.createdAt).toLocaleDateString()}
-                  </span>
-                </p>
+                <Detail label="Unit Number" value={truck.name} />
+                <Detail label="Type" value={truck.type} />
+                <Detail label="Make & Model" value={truck.model} />
+                <Detail label="Year" value={truck.year} />
+                <Detail
+                  label="Current Mileage"
+                  value={`${truck.currentMileage} mi`}
+                />
+                <Detail
+                  label="Acquisition Date"
+                  value={new Date(truck.createdAt).toLocaleDateString()}
+                />
               </InfoCard>
 
               <InfoCard title="Assignment & Status">
-                <p>
-                  <span className="text-gray-400">Assigned Driver</span>
-                  <br />
-                  <span className="font-semibold text-white">
-                    {truck.assignedDriver?.name || "Unassigned"}
-                  </span>
-                </p>
-                <p>
-                  <span className="text-gray-400">Next Maintenance</span>
-                  <br />
-                  <span className="font-semibold text-white">
-                    {nextMaintenanceDate}
-                  </span>
-                </p>
-                <p>
-                  <span className="text-gray-400">Avg Fuel Price</span>
-                  <br />
-                  <span className="font-semibold text-white">
-                    ${truck.avgFuelPrice?.toFixed(2)}/gal
-                  </span>
-                </p>
-                <p>
+                <Detail
+                  label="Assigned Driver"
+                  value={truck.assignedDriver?.name || "Unassigned"}
+                />
+                <Detail label="Next Maintenance" value={nextMaintenanceDate} />
+                <Detail
+                  label="Avg Fuel Price"
+                  value={`$${truck.avgFuelPrice?.toFixed(2)}/gal`}
+                />
+                <div>
                   <span className="text-gray-400">Status</span>
                   <br />
                   <span className="bg-green-600 text-white font-medium py-1 px-3 rounded-full text-sm">
                     {truck.status || "Active"}
                   </span>
-                </p>
+                </div>
               </InfoCard>
             </div>
           </div>
@@ -157,16 +114,16 @@ const AssetDetailsPage = () => {
             <h3 className="text-lg mb-4 font-semibold">Maintenance History</h3>
             <ul className="space-y-4">
               {maintenance?.length > 0 ? (
-                maintenance?.map((item: any, i: number) => {
+                maintenance.map((item: any, i: number) => {
                   const date = new Date(item.createdAt)
                     .toISOString()
                     .split("T")[0];
                   return (
                     <li
                       key={i}
-                      className="p-4 bg-gray-800 rounded-md flex justify-between items-start"
+                      className="p-4 bg-gray-800 rounded-md flex flex-col sm:flex-row justify-between items-start"
                     >
-                      <div>
+                      <div className="mb-2 sm:mb-0">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="text-blue-400 font-bold text-lg capitalize">
                             {item.serviceType?.replace(
@@ -205,12 +162,12 @@ const AssetDetailsPage = () => {
 
       case "Receipts":
         return (
-          <div className="bg-gray-900 text-white p-6 rounded-lg">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">
+          <div className="bg-gray-900 text-white p-4 sm:p-6 rounded-lg">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+              <h2 className="text-xl font-semibold mb-2 sm:mb-0">
                 Repair & Maintenance Receipts
               </h2>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
                 Add Receipt
               </button>
             </div>
@@ -219,12 +176,12 @@ const AssetDetailsPage = () => {
               <p className="text-gray-400">No receipts found.</p>
             ) : (
               <div className="space-y-4">
-                {expenses?.map((expense: any) => (
+                {expenses.map((expense: any) => (
                   <div
                     key={expense._id}
                     className="bg-gray-800 p-4 rounded-lg shadow-sm"
                   >
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
                       <div>
                         <h3 className="text-lg font-semibold">
                           {expense.vendor || "Unknown Vendor"}
@@ -234,7 +191,7 @@ const AssetDetailsPage = () => {
                           {expense.receiptNumber || "N/A"}
                         </p>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right mt-2 sm:mt-0">
                         <p className="text-green-400 text-lg font-bold">
                           ${expense.amount}
                         </p>
@@ -250,11 +207,9 @@ const AssetDetailsPage = () => {
                         </span>
                       </div>
                     </div>
-
                     <p className="text-sm mb-2">
                       {expense.notes || "No description available"}
                     </p>
-
                     <div className="text-xs text-gray-400 flex justify-between border-t border-gray-700 pt-2">
                       <span>Unit: {truck?.name || "Unknown"}</span>
                       <span className="flex gap-4">
@@ -281,32 +236,31 @@ const AssetDetailsPage = () => {
             )}
           </div>
         );
+
       case "Fuel Records":
         return (
-          <div className="p-6 bg-[#1e293b] min-h-screen text-white">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold">Fuel Purchase Records</h2>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+          <div className="p-4 sm:p-6 bg-[#1e293b] min-h-screen text-white">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
+              <h2 className="text-2xl font-semibold mb-2 sm:mb-0">
+                Fuel Purchase Records
+              </h2>
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">
                 Add Fuel Record
               </button>
             </div>
-
             {fuelRecords?.length === 0 ? (
               <p className="text-gray-400">
                 No fuel records found for this unit.
               </p>
             ) : (
-              fuelRecords?.map((f, i) => (
+              fuelRecords.map((f: any) => (
                 <div
                   key={f._id}
                   className="bg-[#334155] rounded-xl p-6 mb-4 shadow-md flex flex-col gap-4"
                 >
-                  {/* Top row: Station name and cost */}
-                  <div className="flex items-start justify-between">
+                  <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2 text-lg font-semibold">
-                      <span className="text-orange-400">
-                        <Fuel className="w-5 h-5" />
-                      </span>
+                      <Fuel className="w-5 h-5 text-orange-400" />
                       {f.station}
                     </div>
                     <div className="text-right">
@@ -319,13 +273,11 @@ const AssetDetailsPage = () => {
                     </div>
                   </div>
 
-                  {/* Date */}
                   <div className="text-sm text-gray-400">
                     {new Date(f.date).toISOString().split("T")[0]}
                   </div>
 
-                  {/* Bottom row: Gallons, Mileage, Unit */}
-                  <div className="grid grid-cols-3 gap-4 text-sm text-gray-300 mt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-gray-300 mt-2">
                     <div>
                       <div className="text-xs uppercase">Gallons</div>
                       <div className="text-white text-base">{f.gallons}</div>
@@ -356,30 +308,25 @@ const AssetDetailsPage = () => {
   };
 
   return (
-    <div className="p-6 bg-[#0f172a] text-white min-h-screen space-y-6">
-      <div className="bg-gray-800 rounded-xl shadow-lg p-6 w-full  flex items-center justify-between space-x-4">
-        {/* Back arrow icon */}
+    <div className="p-4 sm:p-6 bg-[#0f172a] text-white min-h-screen space-y-6">
+      <div className="bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <Link href="/dashboard/assets">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-gray-400 cursor-pointer"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+        </Link>
 
-        <div className="flex-shrink-0">
-          <Link href="/dashboard/assets">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-gray-400 cursor-pointer"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-          </Link>
-        </div>
-
-        {/* Unit details */}
         <div className="flex-grow">
           <h1 className="text-white text-2xl font-semibold mb-1">
             {truck.name}
@@ -389,17 +336,18 @@ const AssetDetailsPage = () => {
           </p>
         </div>
 
-        {/* Truck button */}
-        <div className="flex-shrink-0 bg-blue-500 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-xl shadow-md transition duration-200 ease-in-out">
+        <div className="bg-blue-500 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-xl shadow-md transition">
           {truck.type === "truck" ? "Truck" : "Trailer"}
         </div>
       </div>
-      <div className="flex gap-8 items-center border-b border-gray-700 pb-3">
+
+      {/* Tab Navigation */}
+      <div className="flex gap-6 overflow-x-auto border-b border-gray-700 pb-3">
         {TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex items-center gap-1 text-sm font-medium pb-1 ${
+            className={`flex items-center gap-1 text-sm font-medium whitespace-nowrap ${
               activeTab === tab
                 ? "text-blue-400 border-b-2 border-blue-500"
                 : "text-gray-400 hover:text-white"
@@ -418,7 +366,7 @@ const AssetDetailsPage = () => {
 
 export default AssetDetailsPage;
 
-// 🔧 Helper Components
+// Reusable Components
 const StatCard = ({ title, value }: { title: string; value: any }) => (
   <div className="bg-[#1e293b] p-4 rounded-lg">
     <p className="text-sm text-gray-400">{title}</p>
@@ -439,7 +387,14 @@ const InfoCard = ({
   </div>
 );
 
-// Icon selector
+const Detail = ({ label, value }: { label: string; value: any }) => (
+  <p>
+    <span className="text-gray-400">{label}</span>
+    <br />
+    <span className="font-semibold text-white">{value}</span>
+  </p>
+);
+
 const getTabIcon = (tab: string) => {
   switch (tab) {
     case "Overview":

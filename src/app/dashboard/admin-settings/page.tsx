@@ -25,7 +25,6 @@ export default function AdminSettings() {
   const { data: loginUser } = useLoginUserVeiw();
   const { mutate: updateUser, isPending } = useUpdateUser();
 
-  // Set initial values from logged-in user
   useEffect(() => {
     if (loginUser) {
       setName(loginUser.name || "");
@@ -66,20 +65,22 @@ export default function AdminSettings() {
 
   return (
     <ClientOnly>
-      <div className="bg-[#0f172a] min-h-screen p-6 text-white">
-        <div className="mx-auto bg-[#1e293b] p-8 rounded-lg shadow-lg ">
-          <h1 className="text-3xl font-bold mb-1">Admin Settings</h1>
-          <p className="text-gray-400 mb-6">
+      <div className="bg-[#0f172a] min-h-screen p-4 md:p-6 text-white">
+        <div className="mx-auto  bg-[#1e293b] p-6  rounded-lg shadow-lg">
+          <h1 className="text-2xl md:text-3xl font-bold mb-1">
+            Admin Settings
+          </h1>
+          <p className="text-gray-400 mb-6 text-sm md:text-base">
             Manage your admin profile, notifications, and preferences
           </p>
 
           {/* Tabs */}
-          <div className="flex border-b border-gray-600 mb-6 space-x-6">
+          <div className="flex flex-wrap md:flex-nowrap border-b border-gray-600 mb-6 gap-4 overflow-x-auto scrollbar-hide">
             {tabs.map((tab) => (
               <button
                 key={tab.name}
                 onClick={() => setActiveTab(tab.name)}
-                className={`flex items-center px-1 pb-2 text-sm font-medium border-b-2 transition-colors ${
+                className={`flex items-center whitespace-nowrap px-1 pb-2 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab.name
                     ? "border-blue-500 text-white"
                     : "border-transparent text-gray-400 hover:text-white"
@@ -95,22 +96,22 @@ export default function AdminSettings() {
           {activeTab === "Profile Settings" && (
             <div className="space-y-6">
               {/* Profile Photo */}
-              <div className="flex items-center space-x-6">
-                <div className="relative">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div>
                   {profilePhoto ? (
                     <img
                       src={URL.createObjectURL(profilePhoto)}
                       alt="Preview"
-                      className="w-28 h-28 rounded-full object-cover"
+                      className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover"
                     />
                   ) : loginUser?.profileUrl ? (
                     <img
                       src={loginUser.profileUrl}
                       alt="Profile"
-                      className="w-28 h-28 rounded-full object-cover"
+                      className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-28 h-28 rounded-full bg-blue-600 flex items-center justify-center text-4xl font-bold">
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-blue-600 flex items-center justify-center text-3xl sm:text-4xl font-bold">
                       {name ? name[0].toUpperCase() : "A"}
                     </div>
                   )}
@@ -164,7 +165,7 @@ export default function AdminSettings() {
               <button
                 onClick={handleSubmit}
                 disabled={isPending}
-                className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50"
+                className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50 w-full sm:w-auto"
               >
                 {isPending ? "Updating..." : "Update Profile"}
               </button>

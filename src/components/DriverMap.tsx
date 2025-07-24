@@ -42,8 +42,6 @@ export default function DriverMap() {
 
   const { data: users, refetch } = useUserVeiw();
 
-  // console.log(users);
-
   const loadDrivers = useCallback(() => {
     if (users) {
       const formattedDrivers = users
@@ -67,7 +65,7 @@ export default function DriverMap() {
       setDrivers(formattedDrivers);
       setLastUpdated(new Date().toLocaleTimeString());
     }
-  }, [users]); // depends on `users`
+  }, [users]);
 
   useEffect(() => {
     loadDrivers();
@@ -90,8 +88,6 @@ export default function DriverMap() {
     return driver.status !== "Driving";
   });
 
-  // console.log("fd", filteredDrivers);
-
   const counts = {
     Driving: drivers.filter((d) => d.status === "Driving").length,
     "Rest Break": drivers.filter((d) => d.status === "Rest Break").length,
@@ -100,9 +96,9 @@ export default function DriverMap() {
   };
 
   return (
-    <div className="bg-[#0f172a] text-white p-4">
+    <div className="bg-[#0f172a] text-white p-4 min-h-screen">
       {/* Top Header */}
-      <div className="flex justify-between items-center bg-gradient-to-r from-green-700 to-blue-800 p-6 rounded-lg mb-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-gradient-to-r from-green-700 to-blue-800 p-6 rounded-lg mb-4 gap-4">
         <div>
           <h2 className="text-2xl font-bold flex items-center gap-2">
             <MapIcon /> Live GPS Fleet Tracker
@@ -111,7 +107,7 @@ export default function DriverMap() {
             Real-time location tracking for signed-in drivers
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
           <button
             onClick={handleRefresh}
             className="flex gap-2 bg-gray-400 hover:bg-gray-600 px-4 py-2 rounded text-sm"
@@ -125,42 +121,30 @@ export default function DriverMap() {
         </div>
       </div>
 
-      {/* Status Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <div className="bg-[#1e293b] p-4 rounded-lg flex justify-between items-center">
-          <div>
-            <p className="text-sm text-gray-400">Active Drivers</p>
-            <p className="text-2xl font-bold">{counts.Driving}</p>
+      {/* Status Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        {Object.entries(counts).map(([status, count]) => (
+          <div
+            key={status}
+            className="bg-[#1e293b] p-4 rounded-lg flex justify-between items-center"
+          >
+            <div>
+              <p className="text-sm text-gray-400">{status}</p>
+              <p className="text-2xl font-bold">{count}</p>
+            </div>
+            <div
+              className={`w-3 h-3 rounded-full ${
+                statusDotColor[status as keyof typeof statusDotColor]
+              }`}
+            />
           </div>
-          <div className="w-3 h-3 rounded-full bg-green-500" />
-        </div>
-        <div className="bg-[#1e293b] p-4 rounded-lg flex justify-between items-center">
-          <div>
-            <p className="text-sm text-gray-400">On Break</p>
-            <p className="text-2xl font-bold">{counts["Rest Break"]}</p>
-          </div>
-          <div className="w-3 h-3 rounded-full bg-orange-400" />
-        </div>
-        <div className="bg-[#1e293b] p-4 rounded-lg flex justify-between items-center">
-          <div>
-            <p className="text-sm text-gray-400">Loading</p>
-            <p className="text-2xl font-bold">{counts.Loading}</p>
-          </div>
-          <div className="w-3 h-3 rounded-full bg-blue-500" />
-        </div>
-        <div className="bg-[#1e293b] p-4 rounded-lg flex justify-between items-center">
-          <div>
-            <p className="text-sm text-gray-400">Off Duty</p>
-            <p className="text-2xl font-bold">{counts["Off Duty"]}</p>
-          </div>
-          <div className="w-3 h-3 rounded-full bg-gray-500" />
-        </div>
+        ))}
       </div>
 
-      {/* Filter Buttons */}
-      <div className="flex items-center justify-between mb-4 mt-4">
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
         <h1 className="text-2xl font-bold">Driver Tracker</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {["All", "Driving", "Stopped"].map((type) => (
             <button
               key={type}
@@ -177,14 +161,14 @@ export default function DriverMap() {
         </div>
       </div>
 
-      {/* Map and Sidebar Layout */}
+      {/* Map + Sidebar */}
       <div className="flex flex-col lg:flex-row gap-4">
-        {/* Map Section */}
-        <div className="w-full lg:w-[70%] max-h-[400px]">
+        {/* Map */}
+        <div className="w-full lg:w-[70%] h-[400px] lg:h-[500px]">
           <MapContainer
             center={[37.7749, -95.7129]}
             zoom={4}
-            style={{ height: "400px", width: "100%" }}
+            style={{ height: "100%", width: "100%" }}
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -211,8 +195,8 @@ export default function DriverMap() {
           </MapContainer>
         </div>
 
-        {/* Sidebar Section */}
-        <div className="w-full lg:w-[30%] bg-[#1e293b] text-white p-4 rounded-lg max-h-[400px] overflow-y-auto">
+        {/* Sidebar */}
+        <div className="w-full lg:w-[30%] bg-[#1e293b] text-white p-4 rounded-lg max-h-[500px] overflow-y-auto">
           <h2 className="text-xl font-bold mb-1">Active Drivers</h2>
           <p className="text-sm text-gray-400 mb-4">
             {filteredDrivers.length} drivers shown

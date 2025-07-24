@@ -2,46 +2,47 @@ import { useState, useRef } from "react";
 import { useUploadDocument } from "@/hooks/useDocument";
 import { FileIcon } from "lucide-react";
 import { useUserVeiw } from "@/hooks/useUser";
-import { useTruckVeiw } from "@/hooks/useTruck";
 import toast from "react-hot-toast";
+
+const CATEGORY_OPTIONS = [
+  "Maintenance",
+  "Truck Documents",
+  "Driver Documents",
+  "Compliance",
+  "Permits & Licenses",
+  "Shipping Docs",
+  "Invoices & Receipts",
+  "Insurance",
+  "Tax & IFTA",
+  "Other",
+];
 
 export default function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
   const [category, setCategory] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [selectedDriver, setSelectedDriver] = useState("");
-  const [selectedVehicle, setSelectedVehicle] = useState("");
   const [isDragging, setIsDragging] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutateAsync: uploadDoc, isPending } = useUploadDocument();
   const { data: users } = useUserVeiw();
-  const { data: vehicles } = useTruckVeiw();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
     setFile(selectedFile);
-    if (selectedFile) {
-      const nameWithoutExt = selectedFile.name.replace(/\.[^/.]+$/, "");
-      setCategory(nameWithoutExt);
-    }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
     const droppedFile = e.dataTransfer.files?.[0];
-    if (droppedFile) {
-      setFile(droppedFile);
-      const nameWithoutExt = droppedFile.name.replace(/\.[^/.]+$/, "");
-      setCategory(nameWithoutExt);
-    }
+    if (droppedFile) setFile(droppedFile);
   };
 
   const handleUpload = async () => {
-    if (!file || !selectedDriver || !selectedVehicle) {
+    if (!file || !selectedDriver || !category) {
       toast.error("⚠️ Please fill in all required fields.");
-      // console.log("upload");
       return;
     }
 
@@ -50,7 +51,6 @@ export default function UploadForm() {
     formData.append("category", category);
     formData.append("expiryDate", expiryDate);
     formData.append("driver", selectedDriver);
-    formData.append("vehicle", selectedVehicle);
 
     try {
       await uploadDoc(formData);
@@ -61,7 +61,6 @@ export default function UploadForm() {
       setCategory("");
       setExpiryDate("");
       setSelectedDriver("");
-      setSelectedVehicle("");
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.message || error?.message || "❌ Upload failed!";
@@ -107,47 +106,40 @@ export default function UploadForm() {
       </div>
 
       {file && (
-        <div className="mt-6 space-y-4">
-          <p className="text-sm text-gray-700">Selected file: {file.name}</p>
+        <div className="border-2 border-dashed rounded-xl px-4 py-6 sm:px-10 sm:py-10 mt-4">
+          <p className="text-sm text-gray-700 mb-2">
+            Selected file: {file.name}
+          </p>
 
-          <input
-            type="text"
+          <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-4 py-2 rounded border"
-            placeholder="Enter category"
-          />
+            className="w-full mb-4 px-4 py-2 rounded border"
+          >
+            <option value="">Select Category</option>
+            {CATEGORY_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
 
           <input
             type="date"
             value={expiryDate}
             onChange={(e) => setExpiryDate(e.target.value)}
-            className="w-full px-4 py-2 rounded border"
-            placeholder="Expiry date"
+            className="w-full mb-4 px-4 py-2 rounded border"
           />
 
           <select
             value={selectedDriver}
             onChange={(e) => setSelectedDriver(e.target.value)}
-            className="w-full px-4 py-2 rounded border"
+            className="w-full mb-4 px-4 py-2 rounded border"
           >
             <option value="">Select Driver</option>
             {users?.map((user: any) => (
               <option key={user._id} value={user._id}>
                 {user.name}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={selectedVehicle}
-            onChange={(e) => setSelectedVehicle(e.target.value)}
-            className="w-full px-4 py-2 rounded border"
-          >
-            <option value="">Select Vehicle</option>
-            {vehicles?.map((vehicle: any) => (
-              <option key={vehicle._id} value={vehicle._id}>
-                {vehicle.name || `${vehicle.type} - ${vehicle.model}`}
               </option>
             ))}
           </select>

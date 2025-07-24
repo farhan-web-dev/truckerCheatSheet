@@ -16,7 +16,13 @@ const allFeatures = [
   { id: 10, title: "Admin Settings" },
 ];
 
-const SetupQuickViewModal = ({ onClose }: { onClose: () => void }) => {
+const SetupQuickViewModal = ({
+  onClose,
+  onSave,
+}: {
+  onClose: () => void;
+  onSave: (updated: any[]) => void;
+}) => {
   const [selected, setSelected] = useState<any[]>([]);
 
   useEffect(() => {
@@ -50,6 +56,7 @@ const SetupQuickViewModal = ({ onClose }: { onClose: () => void }) => {
 
   const handleSave = () => {
     localStorage.setItem("quickView", JSON.stringify(selected));
+    onSave(selected);
     onClose();
   };
 
