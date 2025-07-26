@@ -16,6 +16,7 @@ import {
   FilePen,
   Settings,
   MapIcon,
+  CreditCard,
 } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
@@ -81,7 +82,7 @@ const menuItems = [
   },
   {
     label: "Invoice Generator",
-    icon: <Settings {...iconProps} />,
+    icon: <CreditCard {...iconProps} />,
     href: "/dashboard/invoice-generator",
   },
 ];
