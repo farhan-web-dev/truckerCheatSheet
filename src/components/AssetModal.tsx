@@ -11,6 +11,7 @@ interface AssetFormData {
   engineSerialNumber: string;
   assignedDriver: string;
   type: "truck" | "trailer";
+  companyDOTNumber: number;
 }
 
 interface User {
@@ -41,6 +42,7 @@ export const AssetModal: React.FC<AssetModalProps> = ({
     engineSerialNumber: "",
     assignedDriver: "",
     type: "truck",
+    companyDOTNumber: 12345,
   });
 
   useEffect(() => {
@@ -113,6 +115,13 @@ export const AssetModal: React.FC<AssetModalProps> = ({
             className="w-full border p-2 rounded"
           />
 
+          <input
+            name="US Dot Number"
+            placeholder="US Dot Number"
+            value={formData.companyDOTNumber}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+          />
           <select
             name="assignedDriver"
             value={formData.assignedDriver}

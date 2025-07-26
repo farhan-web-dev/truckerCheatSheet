@@ -21,6 +21,7 @@ type AssetFormData = {
   engineSerialNumber: string;
   assignedDriver: string;
   type: "truck" | "trailer";
+  companyDOTNumber: number;
 };
 
 const typeClasses = {
@@ -157,7 +158,7 @@ const FleetAssetsManagement = () => {
           <div>Type</div>
           <div>Make/Model</div>
           <div>Year</div>
-          <div>Mileage</div>
+          <div>US Dot Number</div>
           <div>Assigned Driver</div>
           <div>Actions</div>
         </div>
@@ -234,7 +235,7 @@ const FleetAssetsManagement = () => {
               </div>
               <div>{truck.model}</div>
               <div>{truck.year}</div>
-              <div>0 mi</div>
+              <div>{truck.companyDOTNumber}</div>
               <div>
                 <select
                   value={truck?.assignedDriver?._id || ""}
@@ -244,7 +245,7 @@ const FleetAssetsManagement = () => {
                       assignedDriver: e.target.value || null,
                     })
                   }
-                  className="bg-gray-700 border-none text-white text-sm rounded-md px-3 py-1"
+                  className="bg-gray-700 border-none w-[100px] text-white text-sm rounded-md py-1"
                 >
                   <option value="">Unassigned</option>
                   {data?.map((user) => (

@@ -11,6 +11,7 @@ export type TruckFormData = {
   engineSerialNumber: string;
   assignedDriver: string;
   type: "truck" | "trailer";
+  companyDOTNumber: number;
 };
 
 // CREATE Truck

@@ -79,6 +79,11 @@ const menuItems = [
     icon: <Settings {...iconProps} />,
     href: "/dashboard/admin-settings",
   },
+  {
+    label: "Invoice Generator",
+    icon: <Settings {...iconProps} />,
+    href: "/dashboard/invoice-generator",
+  },
 ];
 
 export default function Sidebar() {
