@@ -14,6 +14,7 @@ import {
   FilePlus2,
   Settings,
   Eye,
+  CreditCard,
 } from "lucide-react";
 import SetupQuickViewModal from "@/components/SetupQuickVeiwModal";
 
@@ -28,6 +29,7 @@ const iconMap: Record<string, JSX.Element> = {
   "Promo & Referral Control": <Gift className="text-blue-600 w-6 h-6" />,
   "BOL Generator": <FilePlus2 className="text-blue-600 w-6 h-6" />,
   "Admin Settings": <Settings className="text-blue-600 w-6 h-6" />,
+  "Invoice Generator": <CreditCard className="text-blue-600 w-6 h-6" />,
 };
 
 const hrefMap: Record<string, string> = {
@@ -37,10 +39,11 @@ const hrefMap: Record<string, string> = {
   "Live GPS Fleet Tracker": "/dashboard/gps-tracker",
   "Fleet Assets Management": "/dashboard/assets",
   "Document Management": "/dashboard/documents",
-  "Nearby Services Directory": "/dashboard/nearby-services",
+  "Nearby Services Directory": "/dashboard/tracking",
   "Promo & Referral Control": "/dashboard/promo-referral",
   "BOL Generator": "/dashboard/bol-generator",
   "Admin Settings": "/dashboard/admin-settings",
+  "Invoice Generator": "/dashboard/invoice-generator",
 };
 
 const QuickViewDashboard = () => {

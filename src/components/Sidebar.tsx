@@ -71,6 +71,11 @@ const menuItems = [
     href: "/dashboard/rewards",
   },
   {
+    label: "Invoice Generator",
+    icon: <CreditCard {...iconProps} />,
+    href: "/dashboard/invoice-generator",
+  },
+  {
     label: "BOL Generator",
     icon: <FilePen {...iconProps} />,
     href: "/dashboard/bol-generator",
@@ -79,11 +84,6 @@ const menuItems = [
     label: "Admin Settings",
     icon: <Settings {...iconProps} />,
     href: "/dashboard/admin-settings",
-  },
-  {
-    label: "Invoice Generator",
-    icon: <CreditCard {...iconProps} />,
-    href: "/dashboard/invoice-generator",
   },
 ];
 

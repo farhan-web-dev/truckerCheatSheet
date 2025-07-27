@@ -14,6 +14,7 @@ const allFeatures = [
   { id: 8, title: "Promo & Referral Control" },
   { id: 9, title: "BOL Generator" },
   { id: 10, title: "Admin Settings" },
+  { id: 11, title: "Invoice Generator" },
 ];
 
 const SetupQuickViewModal = ({
