@@ -38,14 +38,13 @@ export default function UserList({
 
   return (
     <div className="w-full md:w-[300px] border-r bg-white h-full flex flex-col">
-      <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Chats</h2>
+      <div className="bg-blue-600 p-3">
         <input
           type="text"
           placeholder="Search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="ml-2 p-1 px-2 rounded text-sm text-black w-24"
+          className="w-full rounded-md px-4 py-2 text-sm text-black placeholder-gray-500 focus:outline-none"
         />
       </div>
 

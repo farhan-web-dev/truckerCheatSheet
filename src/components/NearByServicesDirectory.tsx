@@ -169,40 +169,45 @@ const NearbyServicesDirectory: React.FC = () => {
       </div>
 
       {/* Map */}
-      {isClient && !!currentPos && (
-        <div className="w-full min-h-[500px] h-[500px] max-h-[500px] overflow-hidden relative">
-          <MapContainer
-            key={mapKey}
-            center={currentPos}
-            zoom={11}
-            scrollWheelZoom
-            className="w-full h-full z-0"
-            style={{ height: "100%", width: "100%" }}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
-            />
-            <MapFixer />
-            <Marker position={currentPos}>
-              <Popup>You are here</Popup>
-            </Marker>
-            {places.map((place) => (
-              <Marker
-                key={place.id}
-                position={[place.lat, place.lon]}
-                icon={L.icon({
-                  iconUrl:
-                    "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
-                  iconSize: [25, 41],
-                  iconAnchor: [12, 41],
-                })}
-              >
-                <Popup>{place.name}</Popup>
+      {isClient && currentPos ? (
+        <div className="w-full px-6 pb-6">
+          {/* Give fixed height wrapper */}
+          <div className="relative w-full h-[400px] rounded-md overflow-hidden border border-gray-700">
+            <MapContainer
+              key={mapKey}
+              center={currentPos}
+              zoom={11}
+              scrollWheelZoom
+              className="w-full h-full"
+              style={{ width: "100%", height: "100%" }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+              />
+              <MapFixer />
+              <Marker position={currentPos}>
+                <Popup>You are here</Popup>
               </Marker>
-            ))}
-          </MapContainer>
+              {places.map((place) => (
+                <Marker
+                  key={place.id}
+                  position={[place.lat, place.lon]}
+                  icon={L.icon({
+                    iconUrl:
+                      "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                  })}
+                >
+                  <Popup>{place.name}</Popup>
+                </Marker>
+              ))}
+            </MapContainer>
+          </div>
         </div>
+      ) : (
+        <div className="text-white p-6">Loading map...</div>
       )}
     </div>
   );

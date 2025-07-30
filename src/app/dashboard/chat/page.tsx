@@ -119,7 +119,7 @@ export default function Chat() {
 
   return (
     <div className="flex h-screen">
-      {/* User List - let it decide width itself */}
+      {/* User List */}
       <div
         className={`h-full border-r ${receiver ? "hidden" : "block"} md:block`}
       >
@@ -140,7 +140,7 @@ export default function Chat() {
         {receiver ? (
           <>
             {/* Chat Header */}
-            <div className="bg-blue-600 text-white p-4 rounded-t flex items-center gap-3">
+            <div className="bg-blue-600 text-white p-4 flex items-center gap-3">
               <button
                 className="md:hidden mr-2"
                 onClick={() => setReceiver(null)}
@@ -163,60 +163,63 @@ export default function Chat() {
               </div>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto bg-gray-50 px-4 py-2">
-              {messages.length === 0 ? (
-                <p className="text-gray-500 text-center mt-4">
-                  No messages yet. Say hello!
-                </p>
-              ) : (
-                messages.map((msg, idx) => {
-                  const isOwn =
-                    msg?.sender === sender?._id ||
-                    msg?.sender?._id === sender?._id;
+            {/* Chat Content (fills height) */}
+            <div className="flex flex-col flex-1 h-[calc(100vh-64px)] bg-gray-50">
+              {/* Messages Area */}
+              <div className="flex-1 overflow-y-auto px-4 py-2">
+                {messages.length === 0 ? (
+                  <p className="text-gray-500 text-center mt-4">
+                    No messages yet. Say hello!
+                  </p>
+                ) : (
+                  messages.map((msg, idx) => {
+                    const isOwn =
+                      msg?.sender === sender?._id ||
+                      msg?.sender?._id === sender?._id;
 
-                  return (
-                    <div
-                      key={idx}
-                      className={`my-2 max-w-md ${
-                        isOwn ? "ml-auto text-right" : "text-left"
-                      }`}
-                    >
+                    return (
                       <div
-                        className={`inline-block px-4 py-2 rounded-lg ${
-                          isOwn
-                            ? "bg-blue-600 text-white rounded-br-none"
-                            : "bg-white text-gray-900 rounded-bl-none shadow"
+                        key={idx}
+                        className={`my-2 max-w-md ${
+                          isOwn ? "ml-auto text-right" : "text-left"
                         }`}
                       >
-                        <p>{msg.content}</p>
-                        <p className="text-xs mt-1 text-gray-400">
-                          {new Date(msg.timestamp).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
+                        <div
+                          className={`inline-block px-4 py-2 rounded-lg ${
+                            isOwn
+                              ? "bg-blue-600 text-white rounded-br-none"
+                              : "bg-white text-gray-900 rounded-bl-none shadow"
+                          }`}
+                        >
+                          <p>{msg.content}</p>
+                          <p className="text-xs mt-1 text-gray-400">
+                            {new Date(msg.timestamp).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
+                    );
+                  })
+                )}
+              </div>
 
-            {/* Message Input */}
-            <div className="flex text-gray-800 items-center p-2 border-t">
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                className="flex-1 p-2 border rounded-l-md focus:outline-none"
-                placeholder="Type a message..."
-              />
-              <button
-                onClick={sendMessage}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-md"
-              >
-                ➤
-              </button>
+              {/* Input Bar */}
+              <div className="flex items-center p-2 border-t bg-white">
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  className="flex-1 p-2 border rounded-l-md focus:outline-none"
+                  placeholder="Type a message..."
+                />
+                <button
+                  onClick={sendMessage}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-md"
+                >
+                  ➤
+                </button>
+              </div>
             </div>
           </>
         ) : (

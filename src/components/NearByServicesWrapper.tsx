@@ -4,7 +4,7 @@
 import dynamic from "next/dynamic";
 
 const NearbyServicesDirectory = dynamic(
-  () => import("@/components/NearByServicesDirectory"),
+  () => import("./NearByServicesDirectory"),
   { ssr: false }
 );
 

@@ -21,6 +21,8 @@ import {
 import Link from "next/link";
 import clsx from "clsx";
 import ClientOnly from "./ClientOnly";
+import { usePathname } from "next/navigation";
+
 const iconProps = { size: 20, color: "white" };
 
 const menuItems = [
@@ -89,6 +91,7 @@ const menuItems = [
 
 export default function Sidebar() {
   const [expanded, setExpanded] = useState(true);
+  const pathname = usePathname();
 
   return (
     <ClientOnly>
@@ -115,14 +118,23 @@ export default function Sidebar() {
         </div>
 
         <nav className="flex flex-col gap-2">
-          {menuItems.map(({ label, icon, href }) => (
-            <Link key={label} href={href} className="text-white">
-              <div className="flex items-center gap-3 px-4 py-3 rounded hover:bg-blue-600 transition-all">
-                {icon}
-                {expanded && <span className="ml-3 block">{label}</span>}
-              </div>
-            </Link>
-          ))}
+          {menuItems.map(({ label, icon, href }) => {
+            const isActive = pathname === href;
+
+            return (
+              <Link key={label} href={href} className="text-white">
+                <div
+                  className={clsx(
+                    "flex items-center gap-3 px-4 py-3 rounded transition-all",
+                    isActive ? "bg-blue-700" : "hover:bg-blue-600"
+                  )}
+                >
+                  {icon}
+                  {expanded && <span className="ml-3 block">{label}</span>}
+                </div>
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </ClientOnly>
