@@ -25,6 +25,8 @@ interface DriverFormData {
   role: string;
   assignedTruck?: string;
   gpsTracking: "enable" | "disable";
+  phone: number;
+  companyDOTNumber: string;
 }
 
 interface DriverData extends DriverFormData {
@@ -52,6 +54,8 @@ export default function DriverModal({
       role: "driver",
       assignedTruck: "",
       gpsTracking: "enable",
+      phone: 0,
+      companyDOTNumber: "",
     },
   });
 
@@ -66,6 +70,8 @@ export default function DriverModal({
         role: initialData.role || "driver",
         assignedTruck: initialData.assignedTruck || "",
         gpsTracking: initialData.gpsTracking || "enable",
+        phone: initialData.phone || 0,
+        companyDOTNumber: initialData.companyDOTNumber || "",
       });
     } else if (mode === "create") {
       reset({
@@ -75,6 +81,9 @@ export default function DriverModal({
         role: "driver",
         assignedTruck: "",
         gpsTracking: "enable",
+
+        phone: 0,
+        companyDOTNumber: "",
       });
     }
   }, [isOpen, mode, initialData?._id]);
@@ -140,8 +149,8 @@ export default function DriverModal({
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
-      <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-md bg-white rounded-lg p-6 space-y-4 shadow-lg">
+      <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
+        <Dialog.Panel className="w-full max-w-md bg-white rounded-lg p-6 space-y-4 shadow-lg max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center">
             <Dialog.Title className="text-lg font-semibold text-gray-800">
               {mode === "create" ? "Add New Driver" : "Edit Driver"}
@@ -249,6 +258,37 @@ export default function DriverModal({
                 <option value="enable">Enable</option>
                 <option value="disable">Disable</option>
               </select>
+            </div>
+            {/* Phone */}
+            <div>
+              <label className="block text-sm text-gray-600">Phone</label>
+              <input
+                type="number"
+                {...register("phone", { required: "Phone number is required" })}
+                className="w-full px-3 py-2 border rounded text-black"
+              />
+              {errors.phone && (
+                <p className="text-red-500 text-xs">{errors.phone.message}</p>
+              )}
+            </div>
+
+            {/* Company DOT Number */}
+            <div>
+              <label className="block text-sm text-gray-600">
+                Company DOT Number
+              </label>
+              <input
+                type="text"
+                {...register("companyDOTNumber", {
+                  required: "Company DOT number is required",
+                })}
+                className="w-full px-3 py-2 border rounded text-black"
+              />
+              {errors.companyDOTNumber && (
+                <p className="text-red-500 text-xs">
+                  {errors.companyDOTNumber.message}
+                </p>
+              )}
             </div>
 
             <button

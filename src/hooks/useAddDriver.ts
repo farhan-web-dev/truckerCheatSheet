@@ -10,6 +10,8 @@ export type DriverFormData = {
   gpsTracking: "enable" | "disable";
   role: "driver" | "admin";
   assignedTruck: string;
+  phone: number;
+  companyDOTNumber: string;
 };
 
 export const useAddDriver = () => {
