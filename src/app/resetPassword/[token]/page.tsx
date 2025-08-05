@@ -174,7 +174,7 @@ export default function ResetWithTokenPage({ params }: Props) {
               disabled={loading}
               className="w-full mt-2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm disabled:opacity-60"
             >
-              {loading ? "Resetting..." : "Reset Password"}
+              {loading ? "Resetting...." : "Reset Password"}
             </button>
           </form>
         </div>
