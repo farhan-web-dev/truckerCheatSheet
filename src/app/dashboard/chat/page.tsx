@@ -12,11 +12,24 @@ import {
   useSendMessage,
   useMarkAsRead,
 } from "@/hooks/useMessages";
+import { useSearchParams } from "next/navigation";
 
 export default function Chat() {
+  const searchParams = useSearchParams();
+  const documentUrl = searchParams.get("documentUrl");
+  const documentName = searchParams.get("documentName");
   const [input, setInput] = useState("");
+  const [sharedDocSent, setSharedDocSent] = useState(false);
+
   const [receiver, setReceiver] = useState<User | null>(null);
   const { data } = useLoginUserVeiw();
+
+  useEffect(() => {
+    if (documentUrl && documentName) {
+      // Show pre-filled message or handle it
+      console.log("Shared document:", documentName, documentUrl);
+    }
+  }, [documentUrl, documentName]);
 
   const sender = useMemo(() => {
     if (!data?._id) return null;
@@ -116,6 +129,40 @@ export default function Chat() {
       console.error("Error sending message:", err);
     }
   };
+
+  useEffect(() => {
+    if (
+      receiver &&
+      sender?._id &&
+      documentUrl &&
+      !sharedDocSent // prevent sending it multiple times
+    ) {
+      const message: Message = {
+        sender: sender._id,
+        receiver: receiver._id,
+        content: `Shared Document: ${documentName}\n${documentUrl}`,
+        timestamp: new Date().toISOString(),
+      };
+
+      sendMessageAPI(message)
+        .then(() => {
+          socket.emit("sendMessage", message);
+          refetchMessages();
+          setSharedDocSent(true); // mark as sent
+        })
+        .catch((err) => {
+          console.error("Failed to send shared document:", err);
+        });
+    }
+  }, [receiver, sender?._id, documentUrl, sharedDocSent]);
+
+  useEffect(() => {
+    if (sharedDocSent) {
+      // Remove query params after sending
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+    }
+  }, [sharedDocSent]);
 
   return (
     <div className="flex h-screen">

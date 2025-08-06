@@ -43,23 +43,17 @@ const Header = () => {
   return (
     <ClientOnly>
       <header className="bg-[#0E1423] text-white px-4 py-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          {/* Left side: Title */}
-          <div className="sm:text-left text-center w-full sm:w-auto">
-            <h1 className="text-2xl font-bold hidden sm:block">{pageTitle}</h1>
-
-            <p className="text-sm text-gray-400 hidden md:block lg:block">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          {/* Left side: Title + Subtitle */}
+          <div className="text-left">
+            <h1 className="text-2xl hidden sm:block font-bold">{pageTitle}</h1>
+            <p className="text-sm hidden sm:block text-gray-400">
               Fleet Management Dashboard
             </p>
           </div>
 
           {/* Right side: Buttons */}
-          <div className="flex flex-wrap sm:flex-nowrap items-center justify-center sm:justify-end gap-3">
-            <button className="flex items-center gap-2 bg-[#2B3448] hover:bg-[#3A4358] text-white px-4 py-2 rounded-md text-sm">
-              <ArrowLeft size={16} />
-              Home
-            </button>
-
+          <div className="flex items-center justify-end gap-3 flex-wrap sm:flex-nowrap">
             {pageTitle === "Quick View" && (
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -85,7 +79,7 @@ const Header = () => {
 
             {loginUser?.profileUrl ? (
               <img
-                src={loginUser?.profileUrl}
+                src={loginUser.profileUrl}
                 alt="User Profile"
                 className="w-10 h-10 rounded-full object-cover"
               />

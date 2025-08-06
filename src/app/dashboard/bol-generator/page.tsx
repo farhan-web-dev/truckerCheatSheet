@@ -3,8 +3,12 @@ import { useState } from "react";
 import { pdf, PDFViewer } from "@react-pdf/renderer";
 import BOLPreviewPDF from "@/components/BolPreviewPdf";
 import ClientOnly from "@/components/ClientOnly";
+import { useRouter } from "next/navigation";
+import { useUploadDocument } from "@/hooks/useDocument";
 
 export default function BOLForm() {
+  const router = useRouter();
+  const { mutateAsync: upload } = useUploadDocument();
   const [formData, setFormData] = useState({
     bolNumber: `BOL-${Date.now()}`,
     pickupDate: "",
@@ -88,20 +92,97 @@ export default function BOLForm() {
     URL.revokeObjectURL(url);
   };
 
-  const handleEmailShare = () => {
-    const subject = encodeURIComponent("Bill of Lading (BOL) Document");
-    const body = encodeURIComponent(
-      `Hi,\n\nPlease find the Bill of Lading (BOL) document attached.\n\nKindly download it first, then attach it to this email.\n\nThanks.`
-    );
+  const handleEmailShare = async () => {
+    try {
+      if (!formData.bolNumber) {
+        alert("Missing BOL Number.");
+        return;
+      }
 
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      const pdfBlob = await pdf(<BOLPreviewPDF data={formData} />).toBlob();
+
+      const file = new File([pdfBlob], `${formData.bolNumber}.pdf`, {
+        type: "application/pdf",
+      });
+
+      const formDataToUpload = new FormData();
+      formDataToUpload.append("file", file);
+      // formDataToUpload.append("truckId", selectedTruckId); // optional
+
+      const response = await upload(formDataToUpload);
+
+      const documentUrl = response?.document?.url;
+      const documentName = response?.document?.name;
+
+      if (!documentUrl) {
+        alert("Failed to upload the document.");
+        return;
+      }
+
+      const subject = encodeURIComponent(`Bill of Lading: ${documentName}`);
+      const body = encodeURIComponent(
+        `Hi,\n\nPlease find the Bill of Lading (BOL) document at the following link:\n\n${documentUrl}\n\nThanks.`
+      );
+
+      // Prefer mailto first
+      const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+      window.location.href = mailtoLink;
+
+      // If that fails (fallback)
+      setTimeout(() => {
+        window.open(
+          `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`,
+          "_blank"
+        );
+      }, 1000);
+    } catch (error) {
+      console.error("Email share error:", error);
+      alert("Failed to share document via email.");
+    }
   };
 
-  const handleWhatsAppShare = () => {
-    const text = encodeURIComponent(
-      "Hi, here's the Bill of Lading (BOL) document."
-    );
-    window.open(`https://wa.me/?text=${text}`, "_blank");
+  const handleShareByChat = async () => {
+    try {
+      if (!formData.bolNumber) {
+        alert("Missing BOL Number.");
+        return;
+      }
+
+      // ✅ Generate the PDF blob from the same component
+      const pdfBlob = await pdf(<BOLPreviewPDF data={formData} />).toBlob();
+
+      const file = new File([pdfBlob], `${formData.bolNumber}.pdf`, {
+        type: "application/pdf",
+      });
+
+      const formDataToUpload = new FormData();
+      formDataToUpload.append("file", file);
+      // formDataToUpload.append("truckId", selectedTruckId); // if needed
+
+      console.log("Uploading document:", formDataToUpload);
+
+      const response = await upload(formDataToUpload);
+      console.log("Upload response:", response);
+
+      const documentUrl = response?.document?.url;
+      const documentName = response?.document?.name;
+
+      if (!documentUrl) {
+        alert("Failed to upload the document.");
+        return;
+      }
+
+      // ✅ Send to chat
+      const encodedUrl = encodeURIComponent(documentUrl);
+      const encodedName = encodeURIComponent(documentName);
+
+      router.push(
+        `/dashboard/chat?documentUrl=${encodedUrl}&documentName=${encodedName}`
+      );
+    } catch (error) {
+      console.error("Error sharing via chat:", error);
+      alert("Failed to share document via chat.");
+    }
   };
 
   return (
@@ -561,7 +642,7 @@ export default function BOLForm() {
 
                 <button
                   className="w-full bg-gray-700 text-white py-3 rounded-xl hover:bg-gray-600 flex items-center justify-center gap-2"
-                  onClick={handleWhatsAppShare}
+                  onClick={handleShareByChat}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

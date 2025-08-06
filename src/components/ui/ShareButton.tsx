@@ -17,20 +17,34 @@ export default function ShareButton({ document }: Props) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const handleEmailClick = () => {
-    const subject = encodeURIComponent(`Sharing Document: ${document.name}`);
-    const body = encodeURIComponent(
-      `Please find the document here:\n${document.url}`
-    );
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
-    setOpen(false);
-  };
+  // const handleEmailClick = () => {
+  //   const subject = encodeURIComponent(`Sharing Document: ${document.name}`);
+  //   const body = encodeURIComponent(
+  //     `Please find the document here:\n${document.url}`
+  //   );
+  //   <a
+  //     href={`mailto:?subject=${encodeURIComponent(
+  //       `Sharing Document: ${document.name}`
+  //     )}&body=${encodeURIComponent(
+  //       `Please find the document here:\n${document.url}`
+  //     )}`}
+  //     className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-center"
+  //     onClick={() => setOpen(false)}
+  //   >
+  //     📩 Email
+  //   </a>;
 
-  const handleChatClick = () => {
-    // You can route to chat with preselected documentId or open a modal
-    router.push(`/dashboard/chat`);
-    setOpen(false);
-  };
+  //   setOpen(false);
+  // };
+
+  // const handleChatClick = () => {
+  //   const encodedUrl = encodeURIComponent(document.url);
+  //   const encodedName = encodeURIComponent(document.name);
+  //   router.push(
+  //     `/dashboard/chat?documentUrl=${encodedUrl}&documentName=${encodedName}`
+  //   );
+  //   setOpen(false);
+  // };
 
   return (
     <>
@@ -53,23 +67,32 @@ export default function ShareButton({ document }: Props) {
               Share via
             </Dialog.Title>
             <div className="flex flex-col gap-3">
-              <button
-                onClick={handleEmailClick}
-                className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+              <a
+                href={`https://mail.google.com/mail/?view=cm&fs=1&to=&su=${encodeURIComponent(
+                  `Sharing Document: ${document.name}`
+                )}&body=${encodeURIComponent(
+                  `Please find the document here:\n${document.url}`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-center"
+                onClick={() => setOpen(false)}
               >
                 📩 Email
-              </button>
+              </a>
+
               <button
-                onClick={handleChatClick}
+                onClick={() => {
+                  const encodedUrl = encodeURIComponent(document.url);
+                  const encodedName = encodeURIComponent(document.name);
+                  router.push(
+                    `/dashboard/chat?documentUrl=${encodedUrl}&documentName=${encodedName}`
+                  );
+                  setOpen(false);
+                }}
                 className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded"
               >
                 💬 Driver Chat
-              </button>
-              <button
-                onClick={() => setOpen(false)}
-                className="mt-2 text-gray-500 hover:text-gray-700 text-sm"
-              >
-                Cancel
               </button>
             </div>
           </Dialog.Panel>
