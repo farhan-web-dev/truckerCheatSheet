@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BarChart2,
   Clock,
@@ -93,6 +93,18 @@ export default function Sidebar() {
   const [expanded, setExpanded] = useState(true);
   const pathname = usePathname();
 
+  // Detect screen size on mount
+  useEffect(() => {
+    const isMobile = window.innerWidth < 1024; // lg breakpoint
+    setExpanded(!isMobile);
+  }, []);
+
+  // Auto-close sidebar on mobile when route changes
+  useEffect(() => {
+    const isMobile = window.innerWidth < 1024;
+    if (isMobile) setExpanded(false);
+  }, [pathname]);
+
   return (
     <ClientOnly>
       <div
@@ -108,7 +120,7 @@ export default function Sidebar() {
               <span className="text-[24px] font-bold">Fleet Admin</span>
             )}
           </div>
-          <button onClick={() => setExpanded(!expanded)}>
+          <button onClick={() => setExpanded(!expanded)} className="lg:hidden">
             {expanded ? (
               <X className="text-white w-[24px]" />
             ) : (

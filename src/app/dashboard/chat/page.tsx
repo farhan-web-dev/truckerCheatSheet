@@ -210,7 +210,7 @@ export default function Chat() {
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  className="flex-1 p-2 border rounded-l-md focus:outline-none"
+                  className="flex-1 p-2 border rounded-l-md focus:outline-none text-gray-900"
                   placeholder="Type a message..."
                 />
                 <button
