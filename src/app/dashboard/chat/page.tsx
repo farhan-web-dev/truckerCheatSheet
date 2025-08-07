@@ -165,7 +165,7 @@ export default function Chat() {
   }, [sharedDocSent]);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-[90dvh] overflow-hidden">
       {/* User List */}
       <div
         className={`h-full border-r ${receiver ? "hidden" : "block"} md:block`}
@@ -187,7 +187,7 @@ export default function Chat() {
         {receiver ? (
           <>
             {/* Chat Header */}
-            <div className="bg-blue-600 text-white p-4 flex items-center gap-3">
+            <div className="bg-blue-600 text-white p-4 flex  items-center gap-3 shrink-0">
               <button
                 className="md:hidden mr-2"
                 onClick={() => setReceiver(null)}
@@ -210,8 +210,8 @@ export default function Chat() {
               </div>
             </div>
 
-            {/* Chat Content (fills height) */}
-            <div className="flex flex-col flex-1 h-[calc(100vh-64px)] bg-gray-50">
+            {/* Chat Content */}
+            <div className="flex flex-col flex-1 bg-gray-50 overflow-hidden">
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto px-4 py-2">
                 {messages.length === 0 ? (
@@ -253,7 +253,7 @@ export default function Chat() {
               </div>
 
               {/* Input Bar */}
-              <div className="flex items-center p-2 border-t bg-white">
+              <div className="flex items-center p-2 border-t bg-white shrink-0">
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
@@ -270,7 +270,6 @@ export default function Chat() {
             </div>
           </>
         ) : (
-          // Placeholder UI when no receiver selected
           <div className="flex flex-1 items-center justify-center text-gray-500 text-lg">
             Select a user to start chatting.
           </div>
