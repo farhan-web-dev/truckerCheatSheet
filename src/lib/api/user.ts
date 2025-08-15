@@ -17,8 +17,8 @@ export const fetchUser = async () => {
   }
 
   const json = await res.json();
-  // console.log("data", json?.data);
-  return json.data.data;
+  console.log("data", json?.data);
+  return json?.data?.users;
 };
 
 export const fetchLoginUser = async () => {
@@ -66,6 +66,29 @@ export const updateUser = async (updatedData: FormData) => {
   }
 
   return res.json();
+};
+
+export const generateLink = async (id: string) => {
+  const token = getCookie("authToken");
+
+  const res = await fetch(`${BASE_URL}/api/v1/users/${id}/link`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Failed to generate link");
+  }
+
+  console.log("data code", data?.data);
+
+  return data?.data;
 };
 
 export const updateUserWithId = async (id: string, updatedData: FormData) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog } from "@headlessui/react";
-import { useGenerateQrCode } from "@/hooks/useUser";
+import { useGenerateConnectLink, useGenerateQrCode } from "@/hooks/useUser";
 import { MessageSquare, Share2, X } from "lucide-react";
 import Image from "next/image";
 
@@ -9,13 +9,21 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   driver?: {
+    _id?: string;
     name: string;
     phone?: string;
   };
 }
 
 export default function ConnectDriverModal({ isOpen, onClose, driver }: Props) {
-  const { data, isLoading } = useGenerateQrCode({ enabled: isOpen });
+  const { data, isLoading } = useGenerateQrCode({
+    enabled: isOpen && !!driver?._id, // only run when modal open + driver id exists
+  });
+
+  const { data: code, isLoading: isLinkLoading } = useGenerateConnectLink(
+    driver?._id
+  );
+
   const qrImage = data?.qrCode || "";
   const connectionUrl = data?.connectionUrl || "";
   const hasPhone = !!driver?.phone;
@@ -45,7 +53,7 @@ export default function ConnectDriverModal({ isOpen, onClose, driver }: Props) {
                     alt="QR Code"
                     width={200}
                     height={200}
-                    className=" border rounded bg-gray-100"
+                    className="border rounded bg-gray-100"
                   />
                 ) : (
                   <div className="w-40 h-40 flex items-center justify-center bg-gray-100 rounded">
@@ -56,16 +64,28 @@ export default function ConnectDriverModal({ isOpen, onClose, driver }: Props) {
 
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">
-                  Connection Link:
+                  Connection Code:
                 </label>
                 <div className="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded text-sm">
-                  <span className="truncate">{connectionUrl}</span>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(connectionUrl)}
-                    className="text-xs bg-gray-300 px-2 py-0.5 rounded hover:bg-gray-400"
-                  >
-                    Copy
-                  </button>
+                  {isLinkLoading ? (
+                    <span>Loading...</span>
+                  ) : (
+                    <>
+                      <span className="truncate">
+                        {code?.linkCode || "No code available"}
+                      </span>
+                      {code?.linkCode && (
+                        <button
+                          onClick={() =>
+                            navigator.clipboard.writeText(code.linkCode)
+                          }
+                          className="text-xs bg-gray-300 px-2 py-0.5 rounded hover:bg-gray-400"
+                        >
+                          Copy
+                        </button>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -84,7 +104,6 @@ export default function ConnectDriverModal({ isOpen, onClose, driver }: Props) {
                       <MessageSquare className="w-6 h-6" />
                       Send SMS
                     </a>
-
                     <a
                       href={`https://wa.me/${
                         driver.phone

@@ -8,7 +8,9 @@ import {
   updateUser,
   UpdateUserData,
   updateUserWithId,
+  generateLink,
 } from "@/lib/api/user";
+import { userAgent } from "next/server";
 
 export const useUserVeiw = () => {
   return useQuery({
@@ -30,6 +32,14 @@ export const useUpdateUser = () => {
   return useMutation({
     mutationFn: ({ updatedData }: { updatedData: FormData }) =>
       updateUser(updatedData),
+  });
+};
+export const useGenerateConnectLink = (id: string) => {
+  return useQuery({
+    queryKey: ["generate-connect-link", id],
+    queryFn: () => generateLink(id),
+    enabled: !!id,
+    staleTime: 1000 * 60,
   });
 };
 

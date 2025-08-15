@@ -37,6 +37,7 @@ const UserTable: React.FC = () => {
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState<null | {
+    _id?: string;
     name: string;
     phone?: string;
   }>(null);
@@ -82,6 +83,8 @@ const UserTable: React.FC = () => {
     setMode("edit");
     setIsOpenModal(true);
   };
+
+  console.log("data", data);
 
   const filteredData = data?.filter((user: any) =>
     user.name.toLowerCase().includes(search.toLowerCase())
@@ -236,6 +239,7 @@ const UserTable: React.FC = () => {
                     <button
                       onClick={() => {
                         setSelectedDriver({
+                          _id: user._id,
                           name: user.name,
                           phone: user.phone,
                         });
@@ -337,6 +341,7 @@ const UserTable: React.FC = () => {
                       <button
                         onClick={() => {
                           setSelectedDriver({
+                            _id: user._id,
                             name: user.name,
                             phone: user.phone,
                           });
