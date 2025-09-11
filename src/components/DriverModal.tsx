@@ -216,9 +216,9 @@ export default function DriverModal({
                 {...register("role")}
                 className="w-full px-3 py-2 border rounded text-black"
               >
-                <option value="driver">Guest</option>
+                {/* <option value="driver">Guest</option> */}
                 <option value="admin">Admin</option>
-                <option value="fleet_driver">Fleet Driver</option>
+                <option value="driver">Fleet Driver</option>
               </select>
             </div>
 
