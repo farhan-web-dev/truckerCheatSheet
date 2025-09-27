@@ -1,8 +1,7 @@
-// Header.tsx
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Bell, MessageSquare, Settings, ArrowLeft } from "lucide-react";
+import { Bell, MessageSquare, Settings, Menu } from "lucide-react";
 import { useState } from "react";
 import SetupQuickViewModal from "./SetupQuickVeiwModal";
 import NotificationBell from "./NotificationModal";
@@ -24,7 +23,11 @@ const routeToTitleMap: Record<string, string> = {
   "/dashboard/admin-settings": "Admin Settings",
 };
 
-const Header = () => {
+const Header = ({
+  setMobileOpen,
+}: {
+  setMobileOpen: (open: boolean) => void;
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const pathname = usePathname();
 
@@ -44,12 +47,21 @@ const Header = () => {
     <ClientOnly>
       <header className="bg-[#0E1423] text-white px-4 py-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          {/* Left side: Title + Subtitle */}
-          <div className="text-left">
-            <h1 className="text-2xl hidden sm:block font-bold">{pageTitle}</h1>
-            <p className="text-sm hidden sm:block text-gray-400">
-              Fleet Management Dashboard
-            </p>
+          {/* Left side: Menu (mobile) + Title */}
+          <div className="flex items-center gap-3">
+            {/* Mobile Menu Button */}
+            <button onClick={() => setMobileOpen(true)} className="lg:hidden">
+              <Menu className="text-white w-[28px] h-[28px]" />
+            </button>
+
+            <div className="text-left">
+              <h1 className="text-2xl hidden sm:block font-bold">
+                {pageTitle}
+              </h1>
+              <p className="text-sm hidden sm:block text-gray-400">
+                Fleet Management Dashboard
+              </p>
+            </div>
           </div>
 
           {/* Right side: Buttons */}

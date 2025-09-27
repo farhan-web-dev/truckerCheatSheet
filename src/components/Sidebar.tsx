@@ -11,7 +11,6 @@ import {
   DollarSign,
   MapPin,
   Gift,
-  Menu,
   X,
   FilePen,
   Settings,
@@ -89,50 +88,47 @@ const menuItems = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({
+  mobileOpen,
+  setMobileOpen,
+}: {
+  mobileOpen: boolean;
+  setMobileOpen: (open: boolean) => void;
+}) {
   const [expanded, setExpanded] = useState(true);
   const pathname = usePathname();
 
-  // Detect screen size on mount
-  useEffect(() => {
-    const isMobile = window.innerWidth < 1024; // lg breakpoint
-    setExpanded(!isMobile);
-  }, []);
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
 
-  // Auto-close sidebar on mobile when route changes
+  // Desktop expand/collapse works as before
   useEffect(() => {
-    const isMobile = window.innerWidth < 1024;
-    if (isMobile) setExpanded(false);
+    if (!isMobile) setExpanded(true);
+  }, [isMobile]);
+
+  // Auto close sidebar on mobile route change
+  useEffect(() => {
+    if (isMobile) setMobileOpen(false);
   }, [pathname]);
 
   return (
     <ClientOnly>
+      {/* Desktop Sidebar */}
       <div
         className={clsx(
-          "bg-[#0f172a] h-screen p-4 flex flex-col overflow-y-auto",
+          "bg-[#0f172a] h-screen p-4 flex-col overflow-y-auto hidden lg:flex",
           expanded ? "w-64" : "w-24"
         )}
       >
-        <div className="flex items-center justify-between text-white mb-6">
-          <div className="flex items-center gap-2">
-            <Truck className="text-blue-400" />
-            {expanded && (
-              <span className="text-[24px] font-bold">Fleet Admin</span>
-            )}
-          </div>
-          <button onClick={() => setExpanded(!expanded)} className="lg:hidden">
-            {expanded ? (
-              <X className="text-white w-[24px]" />
-            ) : (
-              <Menu className="text-white" />
-            )}
-          </button>
+        <div className="flex items-center gap-2 text-white mb-6">
+          <Truck className="text-blue-400" />
+          {expanded && (
+            <span className="text-[24px] font-bold">Fleet Admin</span>
+          )}
         </div>
 
         <nav className="flex flex-col gap-2">
           {menuItems.map(({ label, icon, href }) => {
             const isActive = pathname === href;
-
             return (
               <Link key={label} href={href} className="text-white">
                 <div
@@ -149,6 +145,42 @@ export default function Sidebar() {
           })}
         </nav>
       </div>
+
+      {/* Mobile Overlay Sidebar */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 lg:hidden">
+          <div className="bg-[#0f172a] h-full w-64 p-4 flex flex-col overflow-y-auto">
+            <div className="flex items-center justify-between text-white mb-6">
+              <div className="flex items-center gap-2">
+                <Truck className="text-blue-400" />
+                <span className="text-[24px] font-bold">Fleet Admin</span>
+              </div>
+              <button onClick={() => setMobileOpen(false)}>
+                <X className="text-white w-[24px]" />
+              </button>
+            </div>
+
+            <nav className="flex flex-col gap-2">
+              {menuItems.map(({ label, icon, href }) => {
+                const isActive = pathname === href;
+                return (
+                  <Link key={label} href={href} className="text-white">
+                    <div
+                      className={clsx(
+                        "flex items-center gap-3 px-4 py-3 rounded transition-all",
+                        isActive ? "bg-blue-700" : "hover:bg-blue-600"
+                      )}
+                    >
+                      {icon}
+                      <span className="ml-3 block">{label}</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+      )}
     </ClientOnly>
   );
 }
