@@ -1,18 +1,16 @@
+// components/ui/MapFixer.tsx
 "use client";
 import { useEffect } from "react";
 import { useMap } from "react-leaflet";
 
-const MapFixer = () => {
+export default function MapFixer() {
   const map = useMap();
 
   useEffect(() => {
-    // Invalidate size after layout settles
     setTimeout(() => {
       map.invalidateSize();
-    }, 200); // You can tweak this delay if needed
+    }, 200); // short delay ensures container is painted
   }, [map]);
 
   return null;
-};
-
-export default MapFixer;
+}

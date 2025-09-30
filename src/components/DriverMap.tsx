@@ -164,7 +164,7 @@ export default function DriverMap() {
       {/* Map + Sidebar */}
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Map */}
-        <div className="w-full lg:w-[70%] h-[400px] lg:h-[500px]">
+        <div className="z-0 w-full lg:w-[70%] h-[400px] lg:h-[500px]">
           <MapContainer
             center={[37.7749, -95.7129]}
             zoom={4}

@@ -196,8 +196,8 @@ export default function BOLForm() {
           </p>
         </header>
         {/* BOL Info */}
-        <div className="flex">
-          <div className="flex flex-col gap-6 w-[75%] h-full">
+        <div className="md:flex">
+          <div className="flex flex-col gap-6 md:w-[75%] h-full">
             <section className="bg-slate-800 p-6 rounded-xl text-white space-y-4">
               <h2 className="text-lg font-semibold">BOL Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

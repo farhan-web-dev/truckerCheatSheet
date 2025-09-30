@@ -1,12 +1,23 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+// Import default marker assets
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import MapFixer from "./ui/MapFixer";
+
+// ✅ Patch Leaflet default icons BEFORE any map loads
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x.src,
+  iconUrl: markerIcon.src,
+  shadowUrl: markerShadow.src,
+});
 
 const serviceTypes = [
   {
@@ -42,34 +53,16 @@ type Place = {
   lon: number;
 };
 
-// Fix icon paths
-const fixLeafletIcons = () => {
-  delete (L.Icon.Default.prototype as any)._getIconUrl;
-
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: markerIcon2x.src,
-    iconUrl: markerIcon.src,
-    shadowUrl: markerShadow.src,
-  });
-};
-
 const NearbyServicesDirectory: React.FC = () => {
   const [currentPos, setCurrentPos] = useState<[number, number] | null>(null);
   const [places, setPlaces] = useState<Place[]>([]);
   const [selectedType, setSelectedType] = useState(serviceTypes[0]);
-  const [isClient, setIsClient] = useState(false); // For hydration check
-  const [mapKey, setMapKey] = useState(0);
+  const [isClient, setIsClient] = useState(false);
 
-  // Enable map only on client
+  // Enable client-only rendering
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  useEffect(() => {
-    if (currentPos) {
-      setMapKey((k) => k + 1); // force re-render when location is ready
-    }
-  }, [currentPos]);
 
   // Get current location
   useEffect(() => {
@@ -121,13 +114,8 @@ const NearbyServicesDirectory: React.FC = () => {
     fetchPOIs();
   }, [currentPos, selectedType]);
 
-  // Fix icons on mount
-  useEffect(() => {
-    fixLeafletIcons();
-  }, []);
-
-  if (!currentPos)
-    return <div className="text-white p-6">Getting location...</div>;
+  if (!isClient || !currentPos)
+    return <div className="text-white p-6">Loading map...</div>;
 
   return (
     <div className="bg-[#111827] text-white min-h-screen">
@@ -152,7 +140,7 @@ const NearbyServicesDirectory: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-4">
           Nearby Services Directory
         </h2>
-        <div className="flex gap-4 flex-wrap">
+        <div className="grid grid-cols-2 md:flex gap-4 flex-wrap">
           {serviceTypes.map((type) => (
             <button
               key={type.key}
@@ -169,46 +157,39 @@ const NearbyServicesDirectory: React.FC = () => {
       </div>
 
       {/* Map */}
-      {isClient && currentPos ? (
-        <div className="w-full px-6 pb-6">
-          {/* Give fixed height wrapper */}
-          <div className="relative w-full h-[400px] rounded-md overflow-hidden border border-gray-700">
-            <MapContainer
-              key={mapKey}
-              center={currentPos}
-              zoom={11}
-              scrollWheelZoom
-              className="w-full h-full"
-              style={{ width: "100%", height: "100%" }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
-              />
-              <MapFixer />
-              <Marker position={currentPos}>
-                <Popup>You are here</Popup>
+      <div className="w-full px-6 pb-6">
+        <div className="z-0 relative w-full h-[400px] lg:h-[500px] rounded-md overflow-hidden border border-gray-700">
+          <MapContainer
+            center={currentPos}
+            zoom={11}
+            scrollWheelZoom
+            style={{ height: "100%", width: "100%" }}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+            />
+            <MapFixer />
+            <Marker position={currentPos}>
+              <Popup>You are here</Popup>
+            </Marker>
+            {places.map((place) => (
+              <Marker
+                key={place.id}
+                position={[place.lat, place.lon]}
+                icon={L.icon({
+                  iconUrl:
+                    "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+                  iconSize: [25, 41],
+                  iconAnchor: [12, 41],
+                })}
+              >
+                <Popup>{place.name}</Popup>
               </Marker>
-              {places.map((place) => (
-                <Marker
-                  key={place.id}
-                  position={[place.lat, place.lon]}
-                  icon={L.icon({
-                    iconUrl:
-                      "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                  })}
-                >
-                  <Popup>{place.name}</Popup>
-                </Marker>
-              ))}
-            </MapContainer>
-          </div>
+            ))}
+          </MapContainer>
         </div>
-      ) : (
-        <div className="text-white p-6">Loading map...</div>
-      )}
+      </div>
     </div>
   );
 };

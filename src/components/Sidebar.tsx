@@ -115,7 +115,7 @@ export default function Sidebar({
       {/* Desktop Sidebar */}
       <div
         className={clsx(
-          "bg-[#0f172a] h-screen p-4 flex-col overflow-y-auto hidden lg:flex",
+          "bg-[#0f172a] h-screen p-4 flex-col overflow-y-auto hidden lg:flex z-10",
           expanded ? "w-64" : "w-24"
         )}
       >
