@@ -68,18 +68,20 @@ const QuickViewDashboard = () => {
         />
       )}
 
-      <div className="bg-blue-700 text-white p-6 rounded-md mb-6 flex justify-between items-center">
+      <div className="bg-blue-700 text-white  p-6 rounded-md mb-6 flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Your Quick View Dashboard</h2>
-          <p className="text-sm text-white/80 mt-1">
+          <h2 className="md:text-2xl text-xl  font-bold">
+            Your Quick View Dashboard
+          </h2>
+          <p className="md:text-sm text-xs text-white/80 mt-1">
             Access your top 5 most-used fleet management features instantly
           </p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-white text-blue-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-100"
+          className="bg-white text-blue-700 font-semibold md:px-4 p-2 md:py-2 rounded-md hover:bg-gray-100"
         >
-          Edit Quick View
+          Edit
         </button>
       </div>
 

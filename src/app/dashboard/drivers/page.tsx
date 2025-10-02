@@ -91,7 +91,7 @@ const UserTable: React.FC = () => {
   );
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="md:p-4 p-2  space-y-6">
       {/* Top Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 bg-[#1e293b] p-4 rounded-lg">
         <div className="flex gap-2 mb-4 sm:mb-0">

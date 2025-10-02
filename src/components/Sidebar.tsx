@@ -149,7 +149,7 @@ export default function Sidebar({
       {/* Mobile Overlay Sidebar */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 lg:hidden">
-          <div className="bg-[#0f172a] h-full w-64 p-4 flex flex-col overflow-y-auto">
+          <div className="bg-[#0f172a] h-full w-80 p-4 flex flex-col overflow-y-auto">
             <div className="flex items-center justify-between text-white mb-6">
               <div className="flex items-center gap-2">
                 <Truck className="text-blue-400" />

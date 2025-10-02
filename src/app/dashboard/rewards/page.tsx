@@ -61,25 +61,25 @@ const DriverConnections: React.FC = () => {
       <div className="bg-[#1c2233] p-6 rounded-lg">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2">
+            <h2 className="md:text-2xl text-md font-bold flex items-center gap-2">
               🎁 Driver Connections & Referrals
             </h2>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="md:text-sm text-xs text-gray-400 mt-1">
               Invite drivers to join your fleet via DOT number or direct link
             </p>
           </div>
-          <button className="bg-blue-600 px-4 py-2 rounded-lg flex items-center gap-2 text-white hover:bg-blue-700">
-            <UserPlus size={18} />
+          <button className="bg-blue-600 md:px-4 ml-2 p-1 md:py-2 rounded-lg flex items-center gap-2 text-white hover:bg-blue-700">
+            <UserPlus size={24} />
             Invite Driver
           </button>
         </div>
 
         {/* Tabs */}
         <div className="mt-6 flex gap-2">
-          <button className="bg-blue-600 px-6 py-2 rounded-lg text-white font-semibold">
+          <button className="bg-blue-600 md:px-6 p-2 md:py-2 rounded-lg text-white font-semibold">
             Driver Referrals
           </button>
-          <button className="bg-[#2a3146] px-6 py-2 rounded-lg text-white font-semibold">
+          <button className="bg-[#2a3146] md:px-6 p-2 md:py-2 rounded-lg text-white font-semibold">
             Fleet Connections
           </button>
         </div>

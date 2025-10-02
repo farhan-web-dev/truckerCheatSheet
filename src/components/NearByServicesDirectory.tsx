@@ -122,15 +122,15 @@ const NearbyServicesDirectory: React.FC = () => {
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-700 to-indigo-800 py-6 px-8 flex justify-between items-center rounded-md shadow">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+          <h1 className="md:text-3xl  text-xl font-bold flex items-center gap-2">
             <span>📍</span> Nearby Services Directory
           </h1>
-          <p className="text-sm mt-1">
+          <p className="md:text-sm pl-6 md:pl-0 text-xs mt-1">
             Find diesel repair shops, truck stops, and parts stores within 50
             miles
           </p>
         </div>
-        <div className="text-sm text-right text-gray-300">
+        <div className="md:text-sm text-xs text-right text-gray-300">
           Powered by OpenStreetMap
         </div>
       </div>

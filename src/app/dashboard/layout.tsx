@@ -20,7 +20,7 @@ export default function DashboardLayout({
           <Header setMobileOpen={setMobileOpen} />
         </div>
 
-        <main className="flex-1 overflow-y-auto p-4 bg-[#0f172a]">
+        <main className="flex-1 overflow-y-auto md:p-4 bg-[#0f172a]">
           <DashboardClientWrapper>{children}</DashboardClientWrapper>
         </main>
       </div>

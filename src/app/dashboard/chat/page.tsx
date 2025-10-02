@@ -168,7 +168,12 @@ export default function Chat() {
     <div className="flex h-[90dvh] overflow-hidden">
       {/* User List */}
       <div
-        className={`h-full border-r ${receiver ? "hidden" : "block"} md:block`}
+        className={`
+        h-full border-r
+        ${receiver ? "hidden" : "flex"}   /* full width on mobile */
+        md:flex md:w-1/3 lg:w-1/4
+        w-full
+      `}
       >
         <UserList
           onSelect={setReceiver}
@@ -177,7 +182,6 @@ export default function Chat() {
           unreadCounts={unreadCounts}
         />
       </div>
-
       {/* Chat Panel */}
       <div
         className={`flex-1 flex flex-col ${

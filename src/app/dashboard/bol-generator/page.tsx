@@ -189,8 +189,10 @@ export default function BOLForm() {
     <ClientOnly>
       <div className=" p-6 space-y-6 bg-slate-900 text-white h-full">
         <header className="bg-blue-700 text-white p-6 rounded-xl shadow-lg mb-6">
-          <h1 className="text-3xl font-bold mb-2">BOL Template Creater</h1>
-          <p className="text-lg opacity-90">
+          <h1 className="md:text-3xl text-xl font-bold mb-2">
+            BOL Template Creater
+          </h1>
+          <p className="md:text-lg text-xs opacity-90">
             Create professional Bill of Lading documents and export via email or
             WhatsApp
           </p>
@@ -199,7 +201,7 @@ export default function BOLForm() {
         <div className="md:flex">
           <div className="flex flex-col gap-6 md:w-[75%] h-full">
             <section className="bg-slate-800 p-6 rounded-xl text-white space-y-4">
-              <h2 className="text-lg font-semibold">BOL Information</h2>
+              <h2 className="text-lg  font-semibold">BOL Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-white mb-1">

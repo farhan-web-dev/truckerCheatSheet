@@ -110,12 +110,14 @@ const FleetAssetsManagement = () => {
 
   if (isLoading) return <RouteLoadingSpinner />;
   return (
-    <div className="p-4 space-y-6 bg-[#0f172a] text-white min-h-screen">
+    <div className="md:p-4 p-2 space-y-2 md:space-y-6 bg-[#0f172a] text-white min-h-screen">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold">Fleet Assets Management</h2>
-          <p className="text-sm text-gray-400">
+          <h2 className="md:text-xl  text-md font-semibold">
+            Fleet Assets Management
+          </h2>
+          <p className="md:text-sm text-xs text-gray-400">
             Manage trucks, trailers, and equipment with unit numbers
           </p>
         </div>
