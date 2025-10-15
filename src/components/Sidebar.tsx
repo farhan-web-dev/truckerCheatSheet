@@ -66,11 +66,11 @@ const menuItems = [
     icon: <MapIcon {...iconProps} />,
     href: "/dashboard/gps-tracker",
   },
-  {
-    label: "Promo & Referral Control",
-    icon: <Gift {...iconProps} />,
-    href: "/dashboard/rewards",
-  },
+  // {
+  //   label: "Promo & Referral Control",
+  //   icon: <Gift {...iconProps} />,
+  //   href: "/dashboard/rewards",
+  // },
   {
     label: "Invoice Generator",
     icon: <CreditCard {...iconProps} />,
@@ -82,7 +82,7 @@ const menuItems = [
     href: "/dashboard/bol-generator",
   },
   {
-    label: "Admin Settings",
+    label: "Fleet Manager Settings",
     icon: <Settings {...iconProps} />,
     href: "/dashboard/admin-settings",
   },

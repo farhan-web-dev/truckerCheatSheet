@@ -26,10 +26,10 @@ const statusColorMap = {
 };
 
 const statusDotColor = {
-  Driving: "bg-green-500",
-  "Rest Break": "bg-orange-400",
-  Loading: "bg-blue-500",
-  "Off Duty": "bg-gray-500",
+  Driving: "bg-orange-500",
+  // RestBreak: "bg-orange-400",
+  // Loading:"bg-blue-500",
+  OffDuty: "bg-blue-500",
 };
 
 export default function DriverMap() {
@@ -89,10 +89,10 @@ export default function DriverMap() {
   });
 
   const counts = {
-    Driving: drivers.filter((d) => d.status === "Driving").length,
-    "Rest Break": drivers.filter((d) => d.status === "Rest Break").length,
-    Loading: drivers.filter((d) => d.status === "Loading").length,
-    "Off Duty": drivers.filter((d) => d.status === "Off Duty").length,
+    Active: drivers.filter((d) => d.status === "Driving").length,
+    // "Rest Break": drivers.filter((d) => d.status === "Rest Break").length,
+    // Loading: drivers.filter((d) => d.status === "Loading").length,
+    "Not Active": drivers.filter((d) => d.status === "Off Duty").length,
   };
 
   return (
@@ -122,7 +122,7 @@ export default function DriverMap() {
       </div>
 
       {/* Status Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 gap-4 mb-4">
         {Object.entries(counts).map(([status, count]) => (
           <div
             key={status}

@@ -29,10 +29,12 @@ export default function BOLForm() {
       phone: "",
     },
     carrier: {
+      // driverName: "",
+      // truckNumber: "",
       name: "Trucker Cheat Sheet Transport",
-      driverName: "",
-      truckNumber: "",
-      trailerNumber: "",
+      USDOT: "",
+      address: "",
+      // trailerNumber: "",
     },
     shipment: {
       deliveryDate: "",
@@ -379,10 +381,56 @@ export default function BOLForm() {
             </section>
 
             {/* Carrier Info */}
+            {/* Carrier Info */}
             <section className="bg-slate-800 p-6 rounded-xl text-white space-y-4">
               <h2 className="text-lg font-semibold">Carrier Information</h2>
 
-              {/* Carrier Name (Disabled) */}
+              {/* Carrier Name */}
+              <div>
+                <label className="block text-sm mb-1">Carrier Name</label>
+                <input
+                  type="text"
+                  name="carrier.name"
+                  placeholder="Carrier company name"
+                  value={formData.carrier.name}
+                  onChange={handleChange}
+                  className="w-full bg-slate-700 text-white rounded px-4 py-2 placeholder-slate-400"
+                />
+              </div>
+
+              {/* Address */}
+              <div>
+                <label className="block text-sm mb-1">Address</label>
+                <input
+                  type="text"
+                  name="carrier.address"
+                  placeholder="Carrier address"
+                  value={formData.carrier.address}
+                  onChange={handleChange}
+                  className="w-full bg-slate-700 text-white rounded px-4 py-2 placeholder-slate-400"
+                />
+              </div>
+
+              {/* US DOT */}
+              <div>
+                <label className="block text-sm mb-1">US DOT</label>
+                <input
+                  type="text"
+                  name="carrier.USDOT"
+                  placeholder="Enter US DOT Number"
+                  value={formData.carrier.USDOT}
+                  onChange={handleChange}
+                  className="w-full bg-slate-700 text-white rounded px-4 py-2 placeholder-slate-400"
+                />
+              </div>
+
+              {/* *app should Autofill for user */}
+            </section>
+
+            {/* <section className="bg-slate-800 p-6 rounded-xl text-white space-y-4">
+              <h2 className="text-lg font-semibold">Carrier Information</h2>
+
+
               <div>
                 <label className="block text-sm mb-1">Carrier Name</label>
                 <input
@@ -401,7 +449,7 @@ export default function BOLForm() {
                 />
               </div>
 
-              {/* Driver Name and Truck Number */}
+            
               <div className="flex gap-4">
                 <div className="w-1/2">
                   <label className="block text-sm mb-1">Driver Name</label>
@@ -425,7 +473,7 @@ export default function BOLForm() {
                 </div>
               </div>
 
-              {/* Trailer Number */}
+            
               <div>
                 <label className="block text-sm mb-1">
                   Trailer Number (Optional)
@@ -438,7 +486,7 @@ export default function BOLForm() {
                   className="w-full bg-slate-700 rounded px-3 py-2 placeholder-slate-400"
                 />
               </div>
-            </section>
+            </section> */}
 
             <section className="bg-slate-800 p-6 rounded-xl text-white space-y-4 ">
               <h2 className="text-lg font-semibold">Shipment Details</h2>
@@ -658,7 +706,7 @@ export default function BOLForm() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  WhatsApp Share
+                  Send to Driver
                 </button>
               </div>
             </div>

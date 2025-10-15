@@ -126,7 +126,7 @@ export default function ConnectDriverModal({ isOpen, onClose, driver }: Props) {
                   <strong>How it works:</strong>
                 </p>
                 <ol className="list-decimal ml-4 space-y-1 mt-1">
-                  <li>Driver scans QR code or clicks the link</li>
+                  <li>Driver scans QR code</li>
                   <li>They log into their account</li>
                   <li>Their account connects to your fleet</li>
                   <li>You can manage them in this panel</li>

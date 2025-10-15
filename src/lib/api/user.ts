@@ -18,11 +18,16 @@ export const fetchUser = async () => {
 
   const json = await res.json();
   console.log("data", json?.data);
+  console.log("users", json?.data?.users);
   return json?.data?.users;
 };
 
 export const fetchLoginUser = async () => {
   const token = getCookie("authToken");
+
+  if (!token) {
+    throw new Error("Authentication token not found");
+  }
 
   const res = await fetch(`${BASE_URL}/api/v1/users/me`, {
     headers: {
@@ -37,8 +42,15 @@ export const fetchLoginUser = async () => {
   }
 
   const json = await res.json();
+  const userData = json.data;
 
-  return json.data;
+  // ✅ Store user data in localStorage
+  localStorage.setItem("user", JSON.stringify(userData));
+
+  // ✅ (Optional) Retrieve it again to confirm
+  const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+  return storedUser;
 };
 
 export type UpdateUserData = {

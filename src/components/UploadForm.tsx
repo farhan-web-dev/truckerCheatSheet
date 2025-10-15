@@ -41,7 +41,7 @@ export default function UploadForm() {
   };
 
   const handleUpload = async () => {
-    if (!file || !selectedDriver || !category) {
+    if (!file || !category) {
       toast.error("⚠️ Please fill in all required fields.");
       return;
     }
@@ -50,7 +50,11 @@ export default function UploadForm() {
     formData.append("file", file);
     formData.append("category", category);
     formData.append("expiryDate", expiryDate);
-    formData.append("driver", selectedDriver);
+
+    // Only append driver if selected
+    if (selectedDriver) {
+      formData.append("driver", selectedDriver);
+    }
 
     try {
       await uploadDoc(formData);
@@ -136,7 +140,7 @@ export default function UploadForm() {
             onChange={(e) => setSelectedDriver(e.target.value)}
             className="w-full mb-4 px-4 py-2 rounded border"
           >
-            <option value="">Select Driver</option>
+            <option value="">Select Driver (optional)</option>
             {users?.map((user: any) => (
               <option key={user._id} value={user._id}>
                 {user.name}

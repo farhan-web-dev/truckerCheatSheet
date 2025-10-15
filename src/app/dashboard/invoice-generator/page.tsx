@@ -1,7 +1,7 @@
 "use client";
 
-import { useAddCompany } from "@/hooks/useAddCompany";
-import React, { useState } from "react";
+import { useAddCompany, useUserCompany } from "@/hooks/useAddCompany"; // ✅ includes both hooks
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const CompanyProfileForm = () => {
@@ -13,7 +13,24 @@ const CompanyProfileForm = () => {
     email: "",
   });
 
+  // ✅ Get company info for logged-in user
+  const { data: userCompany, isLoading } = useUserCompany();
+
+  // ✅ Add new company
   const { mutate: addCompany, isPending } = useAddCompany();
+
+  // ✅ Autofill form if company data already exists
+  useEffect(() => {
+    if (userCompany) {
+      setFormData({
+        companyName: userCompany.companyName || "",
+        usdotNumber: userCompany.usdotNumber || "",
+        address: userCompany.address || "",
+        phone: userCompany.phone || "",
+        email: userCompany.email || "",
+      });
+    }
+  }, [userCompany]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,19 +46,20 @@ const CompanyProfileForm = () => {
     addCompany(formData, {
       onSuccess: () => {
         toast.success("Company profile saved successfully!");
-        setFormData({
-          companyName: "",
-          usdotNumber: "",
-          address: "",
-          phone: "",
-          email: "",
-        });
       },
       onError: (error: any) => {
         toast.error(error.message || "Failed to save company profile.");
       },
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="text-center text-white py-10">
+        Loading company info...
+      </div>
+    );
+  }
 
   return (
     <form

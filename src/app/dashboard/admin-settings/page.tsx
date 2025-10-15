@@ -67,7 +67,9 @@ export default function AdminSettings() {
     <ClientOnly>
       <div className="bg-[#0f172a] min-h-screen p-2 md:p-6 text-white">
         <div className="mx-auto  bg-[#1e293b] p-6  rounded-lg shadow-lg">
-          <h1 className="text-xl md:text-3xl font-bold mb-1">Admin Settings</h1>
+          <h1 className="text-xl md:text-3xl font-bold mb-1">
+            Fleet Manager Settings
+          </h1>
           <p className="text-gray-400 mb-6 text-sm md:text-base">
             Manage your admin profile, notifications, and preferences
           </p>

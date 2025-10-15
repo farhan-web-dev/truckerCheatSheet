@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Users,
@@ -16,6 +16,7 @@ import {
   Eye,
   CreditCard,
 } from "lucide-react";
+import { Dialog } from "@headlessui/react";
 import SetupQuickViewModal from "@/components/SetupQuickVeiwModal";
 
 const iconMap: Record<string, JSX.Element> = {
@@ -61,30 +62,43 @@ const QuickViewDashboard = () => {
 
   return (
     <div className="p-4">
-      {showModal && (
-        <SetupQuickViewModal
-          onClose={() => setShowModal(false)}
-          onSave={handleSaveQuickView}
+      {/* Modal */}
+      <Dialog
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      >
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50"
+          aria-hidden="true"
         />
-      )}
+        <Dialog.Panel className="relative bg-white w-full max-w-md mx-auto rounded-lg p-4 sm:p-6 overflow-y-auto max-h-[90vh]">
+          <SetupQuickViewModal
+            onClose={() => setShowModal(false)}
+            onSave={handleSaveQuickView}
+          />
+        </Dialog.Panel>
+      </Dialog>
 
-      <div className="bg-blue-700 text-white  p-6 rounded-md mb-6 flex justify-between items-center">
-        <div>
-          <h2 className="md:text-2xl text-xl  font-bold">
+      {/* Header */}
+      <div className="bg-blue-700 text-white p-6 rounded-md mb-6 flex justify-between items-center flex-wrap">
+        <div className="flex-1 min-w-0">
+          <h2 className="md:text-2xl text-xl font-bold truncate">
             Your Quick View Dashboard
           </h2>
-          <p className="md:text-sm text-xs text-white/80 mt-1">
+          <p className="md:text-sm text-xs text-white/80 mt-1 truncate">
             Access your top 5 most-used fleet management features instantly
           </p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-white text-blue-700 font-semibold md:px-4 p-2 md:py-2 rounded-md hover:bg-gray-100"
+          className="bg-white text-blue-700 font-semibold md:px-4 p-2 md:py-2 rounded-md hover:bg-gray-100 mt-2 md:mt-0"
         >
           Edit
         </button>
       </div>
 
+      {/* Features Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {features.map((feature, index) => (
           <Link key={feature.id} href={hrefMap[feature.title] || "#"}>
@@ -100,7 +114,7 @@ const QuickViewDashboard = () => {
                   <Eye size={14} />
                 </div>
               </div>
-              <h3 className="text-lg font-semibold text-black mt-3">
+              <h3 className="text-lg font-semibold text-black mt-3 truncate">
                 {feature.title}
               </h3>
             </div>

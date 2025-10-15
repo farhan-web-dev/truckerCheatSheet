@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { Button } from "@/components/ui/Button";
+import { useLoginUserVeiw } from "@/hooks/useUser"; // <-- import login user hook
 
 interface AssetFormData {
   _id?: string;
@@ -34,6 +35,8 @@ export const AssetModal: React.FC<AssetModalProps> = ({
   initialData,
   users,
 }) => {
+  const { data: loginUser } = useLoginUserVeiw(); // logged-in user info
+  console.log("loginUser in AssetModal:", loginUser?.companyDOTNumber);
   const [formData, setFormData] = useState<AssetFormData>({
     name: "",
     model: "",
@@ -42,25 +45,35 @@ export const AssetModal: React.FC<AssetModalProps> = ({
     engineSerialNumber: "",
     assignedDriver: "",
     type: "truck",
-    companyDOTNumber: 12345,
+    companyDOTNumber: 0, // <-- start with 0, will update after loginUser loads
   });
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData); // edit mode
-    } else {
-      setFormData({
-        name: "",
-        model: "",
-        year: new Date().getFullYear(),
-        engineType: "",
-        engineSerialNumber: "",
-        assignedDriver: "",
-        type: "truck",
-        companyDOTNumber: 12345,
-      }); // create mode
+      // Edit mode
+      setFormData(initialData);
+    } else if (loginUser) {
+      // Create mode & loginUser loaded
+      setFormData((prev) => ({
+        ...prev,
+        companyDOTNumber:
+          loginUser.companyDOTNumber || loginUser.usDotNumber || 0,
+      }));
     }
-  }, [initialData, isOpen]);
+  }, [initialData, loginUser, isOpen]);
+
+  // useEffect(() => {
+  //   if (initialData) {
+  //     // Edit mode
+  //     setFormData(initialData);
+  //   } else {
+  //     // Create mode
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       companyDOTNumber: loginUser?.usDotNumber || 0, // fill DOT number from login user
+  //     }));
+  //   }
+  // }, [initialData, isOpen, loginUser]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -164,7 +177,7 @@ export const AssetModal: React.FC<AssetModalProps> = ({
               type="number"
               value={formData.companyDOTNumber}
               onChange={handleChange}
-              disabled={!!initialData}
+              disabled={!!initialData} // disable in edit mode
               className={`w-full border p-2 rounded ${
                 initialData ? "bg-gray-100 cursor-not-allowed" : ""
               }`}
