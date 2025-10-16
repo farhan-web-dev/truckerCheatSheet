@@ -5,13 +5,14 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import MapFixer from "./ui/MapFixer";
-import { useUserVeiw } from "@/hooks/useUser";
+import { useUserVeiw } from "@/hooks/useUser"; // ✅ import your user view hook
 
-// Patch default Leaflet icons
+// Import default marker assets
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
+// ✅ Patch Leaflet default icons BEFORE any map loads
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x.src,
@@ -19,7 +20,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow.src,
 });
 
-// Services configuration
 const serviceTypes = [
   {
     key: "truck_stops",
@@ -34,10 +34,16 @@ const serviceTypes = [
     query: `node["shop"="car_repair"]`,
   },
   {
+    key: "parts_stores",
+    label: "Parts Stores",
+    icon: "📦",
+    query: `node["shop"~"car_parts|truck_parts"]`,
+  },
+  {
     key: "nearby_users",
     label: "Nearby Users",
-    icon: "🧑",
-    query: "", // will be handled separately
+    icon: "🧍",
+    query: null, // No Overpass query — will use API data
   },
 ];
 
@@ -54,8 +60,13 @@ const NearbyServicesDirectory: React.FC = () => {
   const [selectedType, setSelectedType] = useState(serviceTypes[0]);
   const [isClient, setIsClient] = useState(false);
 
-  const { data: users, isLoading: isUsersLoading } = useUserVeiw();
+  const {
+    data: users,
+    isLoading: usersLoading,
+    error: usersError,
+  } = useUserVeiw(); // ✅ user data hook
 
+  // Enable client-only rendering
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -63,7 +74,9 @@ const NearbyServicesDirectory: React.FC = () => {
   // Get current location
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
-      (pos) => setCurrentPos([pos.coords.latitude, pos.coords.longitude]),
+      (pos) => {
+        setCurrentPos([pos.coords.latitude, pos.coords.longitude]);
+      },
       () => {
         alert("Location access denied. Using Dallas fallback.");
         setCurrentPos([32.7767, -96.797]);
@@ -71,97 +84,56 @@ const NearbyServicesDirectory: React.FC = () => {
     );
   }, []);
 
-  // Fetch services or users based on selected type
+  // Fetch Overpass data for services
   useEffect(() => {
-    if (!currentPos) return;
+    if (!currentPos || selectedType.key === "nearby_users") return;
 
     const fetchPOIs = async () => {
-      if (selectedType.key === "nearby_users") {
-        if (!users) return;
+      const [lat, lon] = currentPos;
+      const query = `
+        [out:json];
+        (
+          ${selectedType.query}(around:50000, ${lat}, ${lon});
+        );
+        out body;
+      `;
 
-        const userPlaces: Place[] = users
-          .filter((user: any) => user.location?.coordinates?.length === 2)
-          .map((user: any) => ({
-            id: user._id,
-            name: user.name || "Unnamed User",
-            lat: user.location.coordinates[1], // Leaflet: [lat, lng]
-            lon: user.location.coordinates[0],
-          }));
+      const res = await fetch("https://overpass-api.de/api/interpreter", {
+        method: "POST",
+        body: query,
+      });
 
-        setPlaces(userPlaces);
-      } else {
-        const [lat, lon] = currentPos;
-        const query = `
-          [out:json];
-          (
-            ${selectedType.query}(around:50000, ${lat}, ${lon});
-          );
-          out body;
-        `;
+      const data = await res.json();
 
-        const res = await fetch("https://overpass-api.de/api/interpreter", {
-          method: "POST",
-          body: query,
-        });
+      const results: Place[] = data.elements
+        .filter((el: any) => el.lat && el.lon)
+        .map((el: any) => ({
+          id: el.id,
+          name: el.tags?.name || "Unnamed",
+          lat: el.lat,
+          lon: el.lon,
+        }));
 
-        const data = await res.json();
-
-        const results: Place[] = data.elements
-          .filter((el: any) => el.lat && el.lon)
-          .map((el: any) => ({
-            id: el.id,
-            name: el.tags?.name || "Unnamed",
-            lat: el.lat,
-            lon: el.lon,
-          }));
-
-        setPlaces(results);
-      }
+      setPlaces(results);
     };
 
     fetchPOIs();
-  }, [currentPos, selectedType, users]);
+  }, [currentPos, selectedType]);
 
   if (!isClient || !currentPos)
     return <div className="text-white p-6">Loading map...</div>;
-
-  // Custom icons
-  const truckStopIcon = L.icon({
-    iconUrl: "/nearby-truckstop.svg",
-    iconSize: [35, 35],
-    iconAnchor: [17, 35],
-  });
-
-  const dieselRepairIcon = L.icon({
-    iconUrl: "/nearby-diesel.svg",
-    iconSize: [35, 35],
-    iconAnchor: [17, 35],
-  });
-
-  const userIcon = L.icon({
-    iconUrl: "/nearby-user.svg",
-    iconSize: [35, 35],
-    iconAnchor: [17, 35],
-  });
-
-  const getIcon = (typeKey: string) => {
-    if (typeKey === "truck_stops") return truckStopIcon;
-    if (typeKey === "diesel_repair") return dieselRepairIcon;
-    if (typeKey === "nearby_users") return userIcon;
-    return truckStopIcon;
-  };
 
   return (
     <div className="bg-[#111827] text-white min-h-screen">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-700 to-indigo-800 py-6 px-8 flex justify-between items-center rounded-md shadow">
         <div>
-          <h1 className="md:text-3xl  text-xl font-bold flex items-center gap-2">
+          <h1 className="md:text-3xl text-xl font-bold flex items-center gap-2">
             <span>📍</span> Nearby Services Directory
           </h1>
           <p className="md:text-sm pl-6 md:pl-0 text-xs mt-1">
-            Find diesel repair shops, truck stops, and nearby users within 50
-            miles
+            Find diesel repair shops, truck stops, parts stores, and nearby
+            users within 50 miles
           </p>
         </div>
         <div className="md:text-sm text-xs text-right text-gray-300">
@@ -204,18 +176,57 @@ const NearbyServicesDirectory: React.FC = () => {
               attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
             />
             <MapFixer />
+
+            {/* Current user marker */}
             <Marker position={currentPos}>
               <Popup>You are here</Popup>
             </Marker>
-            {places.map((place) => (
-              <Marker
-                key={place.id}
-                position={[place.lat, place.lon]}
-                icon={getIcon(selectedType.key)}
-              >
-                <Popup>{place.name}</Popup>
-              </Marker>
-            ))}
+
+            {/* Nearby Users Mode */}
+            {selectedType.key === "nearby_users" &&
+              !usersLoading &&
+              users?.map((user: any) => {
+                const [lon, lat] = user?.location?.coordinates || [];
+                if (!lat || !lon) return null;
+
+                return (
+                  <Marker
+                    key={user._id}
+                    position={[lat, lon]}
+                    icon={L.icon({
+                      iconUrl:
+                        "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+                      iconSize: [25, 41],
+                      iconAnchor: [12, 41],
+                    })}
+                  >
+                    <Popup>
+                      <div>
+                        <strong>{user.name || "Unknown User"}</strong>
+                        <br />
+                        {user.email && <span>{user.email}</span>}
+                      </div>
+                    </Popup>
+                  </Marker>
+                );
+              })}
+
+            {/* Other Services (Truck stops, etc.) */}
+            {selectedType.key !== "nearby_users" &&
+              places.map((place) => (
+                <Marker
+                  key={place.id}
+                  position={[place.lat, place.lon]}
+                  icon={L.icon({
+                    iconUrl:
+                      "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                  })}
+                >
+                  <Popup>{place.name}</Popup>
+                </Marker>
+              ))}
           </MapContainer>
         </div>
       </div>

@@ -66,8 +66,9 @@ const SetupQuickViewModal = ({
   );
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex  justify-center items-center z-50">
-      <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg relative">
+    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 px-2 sm:px-4">
+      <div className="bg-white w-full max-w-4xl sm:rounded-lg rounded-md shadow-lg relative p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+        {/* Close Button */}
         <button
           className="absolute top-4 right-4 text-white bg-blue-600 hover:bg-blue-700 rounded-full p-1"
           onClick={onClose}
@@ -75,25 +76,32 @@ const SetupQuickViewModal = ({
           <X size={20} />
         </button>
 
-        <h2 className="md:text-2xl text-xl font-bold  text-blue-700 mb-1">
+        {/* Header */}
+        <h2 className="text-xl sm:text-2xl font-bold text-blue-700 mb-1">
           Setup Quick View Dashboard
         </h2>
-        <p className="md:text-sm text-xs text-gray-600 mb-6">
+        <p className="text-xs sm:text-sm text-gray-600 mb-6">
           Select and organize your top 5 most-used features for quick access
         </p>
 
-        <div className="flex gap-6">
+        {/* Two Columns (stack on mobile) */}
+        <div className="flex flex-col sm:flex-row gap-6">
           {/* Selected Features */}
-          <div className=" w-1/2">
+          <div className="w-full sm:w-1/2">
             <h3 className="text-lg font-semibold mb-2">
               Your Quick View ({selected.length}/5)
             </h3>
+            {selected.length === 0 && (
+              <p className="text-gray-500 text-sm mb-2">
+                No features selected yet.
+              </p>
+            )}
             {selected.map((item, idx) => (
               <div
                 key={item.id}
-                className="flex justify-between items-center bg-[#F8FAFC] border border-gray-200 px-4 py-3 rounded-md mb-2"
+                className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-[#F8FAFC] border border-gray-200 px-4 py-3 rounded-md mb-2"
               >
-                <div>
+                <div className="flex-1">
                   <p className="font-medium text-sm text-gray-800">
                     {item.title}
                   </p>
@@ -101,7 +109,9 @@ const SetupQuickViewModal = ({
                     Position #{idx + 1}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
+
+                {/* Buttons Section */}
+                <div className="flex items-center gap-2 self-end sm:self-auto flex-wrap">
                   <button onClick={() => moveUp(idx)} title="Move Up">
                     <ArrowUp
                       size={16}
@@ -126,16 +136,16 @@ const SetupQuickViewModal = ({
           </div>
 
           {/* Available Features */}
-          <div className="w-1/2">
+          <div className="w-full sm:w-1/2">
             <h3 className="text-lg font-semibold mb-2">
               Available Features ({available.length})
             </h3>
-            <div className="max-h-[300px] overflow-y-auto pr-2">
+            <div className="max-h-[300px] overflow-y-auto pr-1 sm:pr-2">
               {available.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => handleAdd(item)}
-                  className="w-full text-left bg-[#F9FAFB] hover:bg-blue-50 px-4 py-2 rounded-md border border-gray-100 mb-2 text-gray-700 text-sm"
+                  className="w-full text-left bg-[#F9FAFB] hover:bg-blue-50 px-4 py-2 rounded-md border border-gray-100 mb-2 text-gray-700 text-sm transition"
                 >
                   {item.title}
                 </button>
@@ -144,10 +154,11 @@ const SetupQuickViewModal = ({
           </div>
         </div>
 
+        {/* Footer */}
         <div className="mt-6 text-right">
           <button
             onClick={handleSave}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-md transition"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-md transition w-full sm:w-auto"
           >
             Done
           </button>

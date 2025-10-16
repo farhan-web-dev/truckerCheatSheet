@@ -8,6 +8,7 @@ import ChangePassword from "@/components/ChangePassword";
 import AdminPreferences from "@/components/AdminPrefrences";
 import toast from "react-hot-toast";
 import ClientOnly from "@/components/ClientOnly";
+import { useRouter } from "next/navigation";
 
 const tabs = [
   { name: "Profile Settings", icon: <User className="w-4 h-4 mr-2" /> },
@@ -24,6 +25,17 @@ export default function AdminSettings() {
 
   const { data: loginUser } = useLoginUserVeiw();
   const { mutate: updateUser, isPending } = useUpdateUser();
+
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Remove token or any auth data
+    localStorage.removeItem("token"); // if you're storing token in localStorage
+    sessionStorage.removeItem("token"); // optional, depending on your setup
+
+    toast.success("Logged out successfully!");
+    router.push("/login"); // redirect to login page
+  };
 
   useEffect(() => {
     if (loginUser) {
@@ -162,13 +174,23 @@ export default function AdminSettings() {
                 </div>
               </div>
 
-              <button
-                onClick={handleSubmit}
-                disabled={isPending}
-                className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50 w-full sm:w-auto"
-              >
-                {isPending ? "Updating..." : "Update Profile"}
-              </button>
+              {/* Update Profile & Logout Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                <button
+                  onClick={handleSubmit}
+                  disabled={isPending}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50 w-full sm:w-auto"
+                >
+                  {isPending ? "Updating..." : "Update Profile"}
+                </button>
+
+                <button
+                  onClick={handleLogout}
+                  className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition w-full sm:w-auto"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
           )}
 
