@@ -33,13 +33,13 @@ const FleetAssetsManagement = () => {
   const { data, isLoading: isLoadingUsers, error, refetch } = useUserVeiw();
   const { data: trucks = [], isLoading, isError } = useTruckVeiw();
   const [filterType, setFilterType] = useState<"All" | "truck" | "trailer">(
-    "All"
+    "All",
   );
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [editAsset, setEditAsset] = useState<AssetFormData | undefined>(
-    undefined
+    undefined,
   );
 
   const handleOpenAdd = () => {
@@ -66,6 +66,7 @@ const FleetAssetsManagement = () => {
 
     if (formData._id) {
       updateTruck.mutate(formData, {
+        // console.log('hgh')
         onSuccess: () => {
           toast.success("🚛 Truck updated successfully!");
         },
@@ -140,7 +141,7 @@ const FleetAssetsManagement = () => {
                 "px-4 py-1 rounded-md text-sm font-medium",
                 filterType === type
                   ? "bg-blue-600 text-white"
-                  : "bg-gray-600 text-gray-100 hover:bg-gray-500"
+                  : "bg-gray-600 text-gray-100 hover:bg-gray-500",
               )}
             >
               {type}
